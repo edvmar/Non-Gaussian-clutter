@@ -5,9 +5,10 @@ Students:
 
 Edvin Martinson, Erik Sahlin & Samuel Winqvist 
 
-Examiner at Chalmers: \n
+Examiner at Chalmers: 
+
 Alexey Geints
 
 SAAB supervisors: 
-Mika Persson
-Andréas Sundström
+
+Mika Persson & Andréas Sundström
