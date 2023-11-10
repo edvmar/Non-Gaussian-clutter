@@ -3,7 +3,7 @@ Repository for project in the course MVE385 at Chalmers in collaboration with SA
 
 Students:
 
-Edvin Martinson, Erik Sahlin & Samuel Winqvist 
+Edvin Martinson (edvmar), Erik Sahlin (Eklektikern) & Samuel Winqvist (samwin1234) 
 
 Examiner at Chalmers: 
 
