@@ -34,11 +34,11 @@ for (iEta in 1:length(etas)){
   
   # TODO: Find these correctly from PDF for CN 
   # TODO: Move to for loop? Don't need to store them.. 
-  f0_r0 = rep(0,n)
-  f1_r0 = rep(0,n)
+  f0_r0 = rep(0,n) # f(r|H_0) for r in r_0, i.e. PDF for CN(0,1)
+  f1_r0 = rep(0,n) # f(r|H_1) for r in r_0, i.e. PDF for CN(s,1)
   
-  f0_r1 = rep(0,n)
-  f1_r1 = rep(0,n)
+  f0_r1 = rep(0,n) # f(r|H_0) for r in r_1, i.e. PDF for CN(0,1)
+  f1_r1 = rep(0,n) # f(r|H_1) for r in r_1, i.e. PDF for CN(s,1)
   
   #for(i in 1:n){
   #  f_0[i] <- dcmvnorm(r_0[i], 0, 1)
@@ -64,6 +64,7 @@ P_TD = P_TD/N
 
 
 # TODO: Plot P_FA vs P_TD correctly with log scales etc
+# TODO: Guess we should do this for several SIR:s as well in the same plot.. 
 P_FA = c(0, 0.2, 0.3, 0.4)
 P_TD = c(0, 0.4, 0.6, 0.8)
 plot(P_FA, P_TD, type = "b", frame = FALSE, pch = 19, 
