@@ -14,51 +14,56 @@ library(cmvnorm)
 n = 1000 # Number of simulations in Monte Carlo
 alpha = 2
 theta = 0
-s <- complex(modulus = alpha, argument = theta)
-eta = 0.01
-a = rk(n, shape = 1, scale = 1, intensity = FALSE)
-b = rk(n, shape = 1, scale = 1, intensity = FALSE)
-c = complex(real = a, imaginary = b)
+s <- complex(modulus = alpha, argument = theta) # signal 
+etas = c(0.1, 0.5, 1, 2, 5, 10)
 
-r_0 = c
-r_1 = c + s
+P_FA = rep(0, length(etas)) # for plotting 
+P_TD = rep(0, length(etas))
 
-f_0 = rep(0, n)
-f_1 = rep(0, n)
-
-#for(i in 1:n){
-#  f_0[i] <- dcmvnorm(r_0[i], 0, 1)
-#  f_0[i] <- dcmvnorm(r_1[i], 0, 1)
-#}
-
-f_0 = 1/pi*exp(-abs(r_0)^2)
-f_1 = 1/pi*exp(-abs(r_1)^2)
-
-# threshhold = 2 # ? 
-# P_FA = 0
-# P_TD = 0
-# for(i in 1:n){
-#   if (abs(r_0[i]) > threshhold){
-#     P_FA <- P_FA + f_0[i]
-#     }
-#   if (abs(r_1[i]) > threshhold){
-#     P_TD <- P_TD + f_0[i]
-#     }
-# }
-# P_FA = P_FA/n
-# P_TD = P_TD/n
-
-P_FA = 0
-P_TD = 0
-for(i in 1:n){
-  LRT = f_1[i]/f_0[i]
-  if (LRT > eta){
-    P_FA <- P_FA + f_0[i]
-    P_TD <- P_TD + f_1[i]
+for (iEta in 1:length(etas)){
+  
+  eta = etas[iEta]
+  
+  # Why new sample for each eta in description? 
+  a = rk(n, shape = 1, scale = 1, intensity = FALSE)
+  b = rk(n, shape = 1, scale = 1, intensity = FALSE)
+  c = complex(real = a, imaginary = b)
+  
+  r_0 = c
+  r_1 = c + s
+  
+  # TODO: Find these correctly from PDF for CN 
+  # TODO: Move to for loop? Don't need to store them.. 
+  f0_r0 = rep(0,n)
+  f1_r0 = rep(0,n)
+  
+  f0_r1 = rep(0,n)
+  f1_r1 = rep(0,n)
+  
+  #for(i in 1:n){
+  #  f_0[i] <- dcmvnorm(r_0[i], 0, 1)
+  #  f_0[i] <- dcmvnorm(r_1[i], 0, 1)
+  #}
+  
+  for (j in 1:n){
+    
+    #False Alarm 
+    if(f1_r0[j]/f0_r0[j] > eta){ # False detection 
+      P_FA[iEta] = P_FA[iEta] + f0_r0[j]
+    }
+    #True Detection
+    if(f1_r1[j]/f0_r1[j] > eta){ # True detection 
+      P_TD[iEta] = P_TD[iEta] + f1_r1[j]
+    }
   }
+
 }
-P_FA = P_FA/n
-P_TD = P_TD/n
+
+P_FA = P_FA/N.  #Normalize 
+P_TD = P_TD/N
+
+
+# TODO: Plot P_FA vs P_TD 
 
 
 
@@ -77,23 +82,3 @@ P_TD = P_TD/n
 
 
 
-
-
-
-
-
-
-
-
-#-------Task c)-------
-
-# Here we have:
-#   Compound Gaussian detector
-#   Gaussian clutter
-
-
-#-------Task d)-------
-
-# Here we have:
-#   Compound Gaussian detector
-#   Compound Gaussian clutter
