@@ -15,9 +15,9 @@ n = 1000 # Number of simulations in Monte Carlo
 alpha = 2
 theta = 0
 s <- complex(modulus = alpha, argument = theta) # signal 
-etas = c(0.1, 0.5, 1, 2, 5, 10)
 
-P_FA = rep(0, length(etas)) # for plotting 
+etas = c(0.1, 0.5, 1, 2, 5, 10) # change later
+P_FA = rep(0, length(etas)) # store for plotting 
 P_TD = rep(0, length(etas))
 
 for (iEta in 1:length(etas)){
@@ -63,13 +63,13 @@ P_FA = P_FA/N.  #Normalize
 P_TD = P_TD/N
 
 
-# TODO: Plot P_FA vs P_TD 
-
-
-
-
-
-
+# TODO: Plot P_FA vs P_TD correctly with log scales etc
+P_FA = c(0, 0.2, 0.3, 0.4)
+P_TD = c(0, 0.4, 0.6, 0.8)
+plot(P_FA, P_TD, type = "b", frame = FALSE, pch = 19, 
+     col = "black", xlab = "P_FA", ylab = "P_TD")
+legend("right", legend=c("SIR = ? "),
+       col=c("black"), lty = 1:2, cex=0.8)
 
 
 
