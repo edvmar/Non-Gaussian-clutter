@@ -15,6 +15,8 @@ Mika Persson & Andréas Sundström
 
 
 # Special packages needed
-Run the following in R-console. 
+Run the following in R-console:
+
 install.packages('kdist')
+
 install.packages('cvnorm')
