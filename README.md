@@ -14,9 +14,6 @@ SAAB supervisors:
 Mika Persson & Andréas Sundström
 
 
-# Special packages needed
-Run the following in R-console:
+# Special mathworks packages needed 
 
-install.packages('kdist')
-
-install.packages('cvnorm')
+Statistics and Machine Learning Toolbox
