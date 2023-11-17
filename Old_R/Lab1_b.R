@@ -61,7 +61,7 @@ P_TD = P_TD/n
 
 
 # TODO: Plot P_FA vs P_TD correctly with log scales etc
-# TODO: Guess we should do this for several SIR:s as well in the same plot.. 
+# TODO: Guess we should do this for several SIR:s as well in the same plot..
 plot(P_FA, P_TD, type = "b", frame = FALSE, pch = 19, 
      col = "black", xlab = "P_FA", ylab = "P_TD")
 legend("right", legend=c("SIR = ? "),
