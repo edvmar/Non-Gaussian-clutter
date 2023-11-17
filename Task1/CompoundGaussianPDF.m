@@ -12,5 +12,7 @@ function f = CompoundGaussianPDF(z, mean, shape)
 
     f = 2*b./gamma(shape).* (sqrt(b*z)).^(shape-1).*besselk(shape-1, z);
 
+    % Guessing there's a normalisation factor missing ? 
+
 end
 

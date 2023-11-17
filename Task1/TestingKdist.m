@@ -3,14 +3,30 @@ clc
 
 %% Testing the sample
 
-sample = SampleCompoundGaussian(10^3, 1, 1);
+sample1 = SampleComplexGaussian(10^3, 0, 1);
+sample2 = SampleCompoundGaussian(10^3, 1, 1);
 
 figure(1)
-histogram(abs(sample))
+subplot(1,2,1)
+histogram(abs(sample1))
+subplot(1,2,2)
+histogram(abs(sample2))
 
-%% Testing the PDF
 
 figure(2)
+subplot(1,2,1)
+plot(real(sample1), imag(sample1), 'bo')
+subplot(1,2,2)
+plot(real(sample2), imag(sample2), 'ro')
+%% Testing the PDF
+
+figure(3)
 x = linspace(0,10);
-y = CompoundGaussianPDF(x, 1, 1);
-plot(x,y)
+y1 = ComplexGaussianPDF(x, 0, 1);
+y2 = CompoundGaussianPDF(x, 1, 1);
+hold on
+plot(x,y1, 'b', LineWidth=1.5)
+plot(x,y2, 'r', LineWidth=1.5)
+legend('CN', 'CG')
+
+% Guessing there's a normalisation factor missing in compound
