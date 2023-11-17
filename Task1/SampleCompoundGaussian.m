@@ -28,6 +28,10 @@ function sample = SampleCompoundGaussian(sampleSize, mean, shape)
     % Don't know if this is how to do it complex but the Kdist only gives positive values.. 
 
 
+    % Do not think that is correct. Since the definition of complex random
+    % variables is to sample real part and imaginary part. Might have the
+    % same probability distribution but not entirely sure
+
     % Guessing there's a normalisation factor missing ? 
 end
 
