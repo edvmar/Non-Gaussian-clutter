@@ -12,7 +12,7 @@ SIRs = [0, 3, 10, 13]; % dB
 numberOfEtaValues = 20;
 etaValues = linspace(1, 10, numberOfEtaValues); % check later! 
 
-sampleSize = 10^5; % 10^8 later? 
+sampleSize = 10^4; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
@@ -23,8 +23,11 @@ pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
 pDetection = zeros(length(SIRs), numberOfEtaValues);
 
 for iSIR = 1:length(SIRs)
-    SIR = SIRs(iSIR); 
-    alpha = clutterSigma*sqrt(SIR);    % signal strength  dunno if this is correct?
+    % SIR = SIRs(iSIR); 
+    % alpha = clutterSigma*sqrt(SIR);    % signal strength  dunno if this is correct?
+    SIR = 10^(SIRs(iSIR)/10);           % potentially like this ? 
+    alpha = clutterSigma*sqrt(SIR);              
+    
     theta = 0;
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
