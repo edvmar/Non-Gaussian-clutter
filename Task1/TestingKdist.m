@@ -30,3 +30,7 @@ plot(x,y2, 'r', LineWidth=1.5)
 legend('CN', 'CG')
 
 % Guessing there's a normalisation factor missing in compound
+
+%%
+
+
