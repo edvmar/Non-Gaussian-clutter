@@ -10,10 +10,10 @@ clc
 
 SIRs = [0, 3, 10, 13]; % dB 
 
-numberOfEtaValues = 20;
+numberOfEtaValues = 10;
 
-etaValues = {linspace(100, 1000, numberOfEtaValues), linspace(100, 1000, numberOfEtaValues),...
-    linspace(100, 1000, numberOfEtaValues), linspace(100, 1000, numberOfEtaValues)}; % check later! 
+etaValues = {linspace(1, 10, numberOfEtaValues), linspace(1, 10, numberOfEtaValues),...
+    linspace(1, 10, numberOfEtaValues), linspace(1, 10, numberOfEtaValues)}; % check later! 
 
 
 sampleSize = 10^6; % 10^8 later? 
@@ -43,19 +43,18 @@ for iSIR = 1:length(SIRs)
 
         
         % False Alarm 
-        fH1 = ComplexGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
-        fH0 = ComplexGaussianPDF(clutterSample, detectorMean, detectorSigma);
-        sumFA = (fH1./fH0 > eta)*ones(sampleSize,1);
+        fH1_fa = ComplexGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
+        fH0_fa = ComplexGaussianPDF(clutterSample, detectorMean, detectorSigma);
+        sumFA = sum(( (fH1_fa./fH0_fa) > eta));
         
         % True Detection
-        fH1 = ComplexGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
-        fH0 = ComplexGaussianPDF(signalSample, detectorMean, detectorSigma);
-        sumTD = (fH1./fH0 > eta)*ones(sampleSize,1);
+        fH1_td = ComplexGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
+        fH0_td = ComplexGaussianPDF(signalSample, detectorMean, detectorSigma);
+        sumTD = sum(((fH1_td./fH0_td) > eta));
 
         pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
         pDetection(iSIR, iEta) = sumTD/sampleSize;
     end
-
 end 
 
 %% Plotting 
@@ -63,7 +62,30 @@ hold on
 for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
-set(gca, 'XScale', 'log');
+%set(gca, 'XScale', 'log');
 legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
 
 %Should probably be with log axis etc.. 
+%% Analytically
+clc,clear
+hold on
+numberOfEtaValues = 20;
+etaValues = linspace(1, 10, numberOfEtaValues);
+SIRs = 3;
+clutterSigma=1;
+pFA = zeros(1, numberOfEtaValues);
+pTD = zeros(1, numberOfEtaValues);
+for iEta=1:numberOfEtaValues
+    eta = etaValues(iEta); 
+    SIR = 10^(SIRs/10);   
+    alpha = clutterSigma*sqrt(SIR);             
+    a_l = (log(eta)+alpha)^2/(2*alpha);
+    pFA(iEta) = 1 - normcdf(a_l);
+    pTD(iEta) = 1 - normcdf(2*(a_l-alpha));
+end
+
+plot(pFA, pTD, LineWidth=1.5)
+%set(gca, 'XScale', 'log');
+%legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
+
+

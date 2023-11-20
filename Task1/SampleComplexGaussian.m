@@ -6,7 +6,7 @@
 
 
 function sample = SampleComplexGaussian(sampleSize, mean, sigma)
-    
+    sigma = sigma/sqrt(2); % Should it be 1/sqrt(2)?
     samples = randn(1, sampleSize); 
     a = samples*sigma + mean;
 
