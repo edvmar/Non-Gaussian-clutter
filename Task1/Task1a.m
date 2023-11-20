@@ -45,7 +45,7 @@ for iSIR = 1:length(SIRs)
         % False Alarm 
         fH1_fa = ComplexGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
         fH0_fa = ComplexGaussianPDF(clutterSample, detectorMean, detectorSigma);
-        sumFA = sum(( (fH1_fa./fH0_fa) > eta));
+        sumFA = sum(((fH1_fa./fH0_fa) > eta));
         
         % True Detection
         fH1_td = ComplexGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
@@ -62,7 +62,7 @@ hold on
 for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
-%set(gca, 'XScale', 'log');
+set(gca, 'XScale', 'log');
 legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
 
 %Should probably be with log axis etc.. 
@@ -71,7 +71,7 @@ clc,clear
 hold on
 numberOfEtaValues = 20;
 etaValues = linspace(1, 10, numberOfEtaValues);
-SIRs = 3;
+SIRs = 8;
 clutterSigma=1;
 pFA = zeros(1, numberOfEtaValues);
 pTD = zeros(1, numberOfEtaValues);
@@ -85,7 +85,7 @@ for iEta=1:numberOfEtaValues
 end
 
 plot(pFA, pTD, LineWidth=1.5)
-%set(gca, 'XScale', 'log');
-%legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
+set(gca, 'XScale', 'log');
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
 
 
