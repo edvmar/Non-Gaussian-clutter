@@ -12,8 +12,8 @@ SIRs = [0, 3, 10, 13]; % dB
 
 numberOfEtaValues = 20;
 
-etaValues = {linspace(0.5, 10, numberOfEtaValues), linspace(0.5, 10, numberOfEtaValues),...
-    linspace(0.5, 10, numberOfEtaValues), linspace(0.5, 10, numberOfEtaValues)}; % check later! 
+etaValues = {linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues),...
+    linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues)}; % check later! 
 
 
 sampleSize = 10^8; % 10^8 later? 
@@ -55,10 +55,10 @@ for iSIR = 1:length(SIRs)
         pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
         pDetection(iSIR, iEta) = sumTD/sampleSize;
     end
-    iSIR
 end 
 
 %% Plotting 
+figure(2)
 hold on
 for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)

@@ -6,11 +6,14 @@
 
 
 function sample = SampleComplexGaussian(sampleSize, mean, sigma)
-    sigma_one_dim = sigma/2; % Should it be 1/sqrt(2)?
+    sigma1dim = sigma/sqrt(2); % Should it be 1/sqrt(2)?
+
     samples = randn(1, sampleSize); 
-    a = samples*sigma_one_dim + mean;
+    a = samples*sigma1dim + mean;
+    
     samples = randn(1, sampleSize); 
-    b = samples*sigma_one_dim + mean;
+    b = samples*sigma1dim + mean;
+    
     sample = a + 1i*b;
 
 end

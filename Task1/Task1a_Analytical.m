@@ -10,10 +10,10 @@ clc
 
 SIRs = [0, 3, 10, 13]; % dB 
 
-numberOfEtaValues = 50;
+numberOfEtaValues = 20;
 
-etaValues = {linspace(0.5, 10, numberOfEtaValues), linspace(0.5, 10, numberOfEtaValues),...
-    linspace(0.5, 10, numberOfEtaValues), linspace(0.5, 10, numberOfEtaValues)}; % check later! 
+etaValues = {linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues),...
+    linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues)}; % check later! 
 
 
 detectorSigma = 1; % The standard deviation for the detector
@@ -34,8 +34,8 @@ for iSIR = 1:length(SIRs)
         eta = etaValues{iSIR}(iEta); 
         a_l = (log(eta)+alpha)^2/(2*alpha);
 
-        pFalseAlarm(iSIR,iEta) = 1 - normcdf(a_l);
-        pDetection(iSIR,iEta) = 1 - normcdf(2*(a_l-alpha));
+        pFalseAlarm(iSIR,iEta) = 1 - normcdf(sqrt(2)*a_l);
+        pDetection(iSIR,iEta) = 1 - normcdf(sqrt(2)*(a_l-alpha));
         
     end
 end 
