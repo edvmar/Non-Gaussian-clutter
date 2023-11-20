@@ -16,7 +16,7 @@ etaValues = {linspace(1, 10, numberOfEtaValues), linspace(1, 10, numberOfEtaValu
     linspace(1, 10, numberOfEtaValues), linspace(1, 10, numberOfEtaValues)}; % check later! 
 
 
-sampleSize = 10^6; % 10^8 later? 
+sampleSize = 10^7; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
@@ -66,26 +66,4 @@ set(gca, 'XScale', 'log');
 legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
 
 %Should probably be with log axis etc.. 
-%% Analytically
-clc,clear
-hold on
-numberOfEtaValues = 20;
-etaValues = linspace(1, 10, numberOfEtaValues);
-SIRs = 8;
-clutterSigma=1;
-pFA = zeros(1, numberOfEtaValues);
-pTD = zeros(1, numberOfEtaValues);
-for iEta=1:numberOfEtaValues
-    eta = etaValues(iEta); 
-    SIR = 10^(SIRs/10);   
-    alpha = clutterSigma*sqrt(SIR);             
-    a_l = (log(eta)+alpha)^2/(2*alpha);
-    pFA(iEta) = 1 - normcdf(a_l);
-    pTD(iEta) = 1 - normcdf(2*(a_l-alpha));
-end
-
-plot(pFA, pTD, LineWidth=1.5)
-set(gca, 'XScale', 'log');
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
-
 
