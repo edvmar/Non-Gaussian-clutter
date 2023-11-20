@@ -10,13 +10,13 @@ clc
 
 SIRs = [0, 3, 10, 13]; % dB 
 
-numberOfEtaValues = 10;
+numberOfEtaValues = 20;
 
-etaValues = {linspace(1, 10, numberOfEtaValues), linspace(1, 10, numberOfEtaValues),...
-    linspace(1, 10, numberOfEtaValues), linspace(1, 10, numberOfEtaValues)}; % check later! 
+etaValues = {linspace(0.5, 10, numberOfEtaValues), linspace(0.5, 10, numberOfEtaValues),...
+    linspace(0.5, 10, numberOfEtaValues), linspace(0.5, 10, numberOfEtaValues)}; % check later! 
 
 
-sampleSize = 10^7; % 10^8 later? 
+sampleSize = 10^8; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
@@ -55,6 +55,7 @@ for iSIR = 1:length(SIRs)
         pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
         pDetection(iSIR, iEta) = sumTD/sampleSize;
     end
+    iSIR
 end 
 
 %% Plotting 
@@ -63,7 +64,7 @@ for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
 set(gca, 'XScale', 'log');
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13')
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west')
 
 %Should probably be with log axis etc.. 
 
