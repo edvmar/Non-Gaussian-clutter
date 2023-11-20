@@ -28,7 +28,7 @@ function sample = SampleCompoundGaussian(sampleSize, mean, shape)
     % Don't know if this is how to do it complex but the Kdist only gives positive values.. 
 
     % if(rand(1)<0.5)
-    % *-1
+    % 
 
     % Guessing there's a normalisation factor missing ? 
 end
