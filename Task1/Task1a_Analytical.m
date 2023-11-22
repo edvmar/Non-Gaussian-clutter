@@ -10,10 +10,14 @@ clc
 
 SIRs = [0, 3, 10, 13]; % dB 
 
-numberOfEtaValues = 20;
+numberOfEtaValues = 1000;
 
-etaValues = {linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues),...
-    linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues)}; % check later! 
+maxEta = 4*1e5;
+etaValues = {[linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)]...
+             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)],...
+             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)], ...
+             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)]}; 
+    
 
 
 detectorSigma = 1; % The standard deviation for the detector
@@ -25,17 +29,15 @@ pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
 pDetection = zeros(length(SIRs), numberOfEtaValues);
 
 for iSIR = 1:length(SIRs)
-    % SIR = SIRs(iSIR); 
-    % alpha = clutterSigma*sqrt(SIR);    % signal strength  dunno if this is correct?
-    SIR = 10^(SIRs(iSIR)/10);           % potentially like this ? 
+    SIR = 10^(SIRs(iSIR)/10);          
     alpha = clutterSigma*sqrt(SIR);             
 
     for iEta=1:numberOfEtaValues
         eta = etaValues{iSIR}(iEta); 
-        a_l = (log(eta)+alpha)^2/(2*alpha);
+        threshold = (log(eta)+alpha^2)/(2*alpha);
 
-        pFalseAlarm(iSIR,iEta) = 1 - normcdf(sqrt(2)*a_l);
-        pDetection(iSIR,iEta) = 1 - normcdf(sqrt(2)*(a_l-alpha));
+        pFalseAlarm(iSIR,iEta) = 1 - normcdf(sqrt(2)*threshold);
+        pDetection(iSIR,iEta) = 1 - normcdf(sqrt(2)*(threshold-alpha));
         
     end
 end 
@@ -46,5 +48,6 @@ for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
 set(gca, 'XScale', 'log');
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location='northwest')
-
+xlabel('P_{FA}'), ylabel('P_{TD}')
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location='best')
+axis([1e-7, 1, 0, 1])

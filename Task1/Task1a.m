@@ -10,10 +10,12 @@ clc
 
 SIRs = [0, 3, 10, 13]; % dB 
 
-numberOfEtaValues = 20;
-
-etaValues = {linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues),...
-    linspace(0.5, 5, numberOfEtaValues), linspace(0.5, 5, numberOfEtaValues)}; % check later! 
+numberOfEtaValues = 1000;
+maxEta = 5*1e5;
+etaValues = {[linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)]...
+             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)],...
+             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)], ...
+             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)]}; 
 
 
 sampleSize = 10^8; % 10^8 later? 
@@ -27,15 +29,14 @@ pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
 pDetection = zeros(length(SIRs), numberOfEtaValues);
 
 for iSIR = 1:length(SIRs)
-    % SIR = SIRs(iSIR); 
-    % alpha = clutterSigma*sqrt(SIR);    % signal strength  dunno if this is correct?
-    SIR = 10^(SIRs(iSIR)/10);           % potentially like this ? 
+    
+    SIR = 10^(SIRs(iSIR)/10);           
     alpha = clutterSigma*sqrt(SIR);             
    
-    theta = 0;
+    theta = 0; % change to rand(1,1)*2*pi ? 
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
-    clutterSample = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); % ?
+    clutterSample = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); 
     signalSample = clutterSample + s;
 
     for iEta=1:numberOfEtaValues
@@ -64,7 +65,8 @@ for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
 set(gca, 'XScale', 'log');
+xlabel('P_{FA}'), ylabel('P_{TD}')
 legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west')
-
-%Should probably be with log axis etc.. 
+axis([1e-7, 1, 0, 1])
+ 
 

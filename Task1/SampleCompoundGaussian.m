@@ -9,10 +9,11 @@
 function sample = SampleCompoundGaussian(sampleSize, mean, shape)
     
     % REWRITE AS: 
-    % sigma = randn(0,1) (variance or stddev?)
-    % a = randn(0,1)*sigma
-    % sigma = randn(0,1)
-    % b = randn(0,1)*sigma
+    % sigma = randn(1,sampleSize) (variance or stddev?)
+    % a = randn(1,sampleSize)*sigma
+    % sigma = randn(1,sampleSize) 
+    % b = randn(1,sampleSize)*sigma
+    %
     % sample = a + 1i*b + mean
     % ? 
 
