@@ -8,7 +8,14 @@
 
 function sample = SampleCompoundGaussian(sampleSize, mean, shape)
     
-    
+    % REWRITE AS: 
+    % sigma = randn(0,1) (variance or stddev?)
+    % a = randn(0,1)*sigma
+    % sigma = randn(0,1)
+    % b = randn(0,1)*sigma
+    % sample = a + 1i*b + mean
+    % ? 
+
     GaussianData = randn(1, sampleSize);
 
     Q = 0.5*(erfc(GaussianData/(2^0.5)));
@@ -31,5 +38,6 @@ function sample = SampleCompoundGaussian(sampleSize, mean, shape)
     % *-1
 
     % Guessing there's a normalisation factor missing ? 
+
 end
 
