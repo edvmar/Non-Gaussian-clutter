@@ -6,11 +6,11 @@
 clear
 clc
 
-sampleSize = 1e4;
+sampleSize = 1e8;
 
 SIRs = [0, 3, 10, 13]; % dB 
 
-numberOfEtaValues = 10000;
+numberOfEtaValues = 1000;
 maxEta = 4*1e5;
 etaValues = {[linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)]...
              [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)],...
@@ -86,18 +86,42 @@ axis([1e-7, 1, 0, 1])
 
 %% P_FA contra eta 
 figure(2)
+subplot(1,3,1)
 hold on
-for iSIR = 1:length(SIRs)
+
+plot(etaValues{1},pFalseAlarmAnalytical(1,:), LineWidth=1.5)
+set(gca,'ColorOrderIndex',1)
+plot(etaValues{1},pFalseAlarmNumerical(1,:), '--', LineWidth=1.5)
+set(gca, 'YScale', 'log');
+ylabel('P_{FA}'), xlabel('\eta')
+legend('SIR = 0', location='best')
+axis([0, 1e3, 1e-8, 1])
+
+subplot(1,3,2)
+hold on
+set(gca,'ColorOrderIndex',2)
+plot(etaValues{2},pFalseAlarmAnalytical(2,:), LineWidth=1.5)
+set(gca,'ColorOrderIndex',2)
+plot(etaValues{2},pFalseAlarmNumerical(2,:), '--', LineWidth=1.5)
+set(gca, 'YScale', 'log');
+ylabel('P_{FA}'), xlabel('\eta')
+legend('SIR = 3', location='best')
+axis([0, 1e4, 1e-8, 1])
+
+subplot(1,3,3)
+hold on
+set(gca,'ColorOrderIndex',3)
+for iSIR = 3:4
     plot(etaValues{iSIR},pFalseAlarmAnalytical(iSIR,:), LineWidth=1.5)
 end
-set(gca,'ColorOrderIndex',1)
-for iSIR = 1:length(SIRs)
+set(gca,'ColorOrderIndex',3)
+for iSIR = 3:4
     plot(etaValues{iSIR},pFalseAlarmNumerical(iSIR,:), '--', LineWidth=1.5)
 end
 set(gca, 'YScale', 'log');
 ylabel('P_{FA}'), xlabel('\eta')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location='best')
-
+legend('SIR = 10', 'SIR = 13', location='best')
+axis([0, maxEta, 1e-8, 1])
 
 
 
