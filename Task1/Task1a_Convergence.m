@@ -126,7 +126,7 @@ axis([0, maxEta, 1e-8, 1])
 
 
 %% Also loop over different sampleSizes and plot |pFalseAlarmAnalytical - pFalseAlarmaNumerical| vs N 
-% don't know how to define the RHS.
+% don't know how to define the RHS. Samuel says one signal one eta. 
 % For each eta? But for high eta and small sample size won't get an
 % outlier. 
 

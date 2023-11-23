@@ -4,7 +4,7 @@ clc
 %% Testing the sample
 
 sample1 = SampleComplexGaussian(10^3, 0, 1);
-sample2 = SampleCompoundGaussian(10^3, 1, 1);
+sample2 = SampleCompoundGaussian(10^3, 0, 1);
 
 figure(1)
 subplot(1,2,1)
