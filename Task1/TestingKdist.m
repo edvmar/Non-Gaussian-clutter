@@ -25,9 +25,9 @@ axis([-4 4 -4 4])
 %% Testing the PDF
 clc,clear
 figure(3)
-x = linspace(-10,10);
+x = linspace(-5,5);
 y1 = ComplexGaussianPDF(x, 0, 1);
-y2 = CompoundGaussianPDF(x, 1, 1);
+y2 = CompoundGaussianPDF(x, 1);
 hold on
 plot(x, y1, 'b', LineWidth=1.5)
 plot(x, y2, 'r', LineWidth=1.5)
@@ -35,6 +35,7 @@ legend('CN', 'CG')
 
 % Guessing there's a normalisation factor missing in compound
 
+
 %%
-
-
+sigma = 10;
+integral(@(a)CompoundGaussianPDF(a,0,sigma),-100, 100)
