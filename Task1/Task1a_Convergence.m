@@ -6,9 +6,9 @@
 clear
 clc
 
-sampleSizes = fix(logspace(4,7,200));
+sampleSizes = fix(logspace(3,8,200));
 
-eta = 1000;
+eta = 100;
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma  = 1; % The standard deviation for the detector
@@ -65,6 +65,6 @@ plot(sampleSizes, errorFalseAlarm, LineWidth=1.5)
 plot(sampleSizes,1./sqrt(sampleSizes), LineWidth=1.5)
 set(gca, 'YScale', 'log');
 set(gca, 'XScale', 'log');
-legend('Error $P_{FA}$', '$\frac{1}{\sqrt(N)}$', 'Interpreter', 'latex') % n or N? 
-xlabel('sample size N'), ylabel('Error')
+legend('Error $P_{FA}$', '$\frac{1}{\sqrt{N}}$', 'Interpreter', 'latex') % n or N? 
+xlabel('N'), ylabel('Error')
 

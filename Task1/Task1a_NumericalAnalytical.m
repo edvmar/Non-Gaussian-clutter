@@ -12,10 +12,10 @@ SIRs = [0, 3, 10, 13]; % dB
 
 numberOfEtaValues = 1000;
 maxEta = 4*1e5;
-etaValues = {[linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)]...
-             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)],...
-             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)], ...
-             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, maxEta, numberOfEtaValues*0.5)]}; 
+etaValues = {linspace(0.5, 1000, numberOfEtaValues),...
+             [linspace(0.5, 200, numberOfEtaValues*0.1),linspace(200, 1e4, numberOfEtaValues*0.9)],...
+             [linspace(0.5, 1000, numberOfEtaValues*0.5),linspace(1000, maxEta, numberOfEtaValues*0.5)], ...
+             [linspace(0.5, 1000, numberOfEtaValues*0.5),linspace(1000, maxEta, numberOfEtaValues*0.5)]}; 
 
 
 detectorSigma = 1; % The standard deviation for the detector
@@ -72,19 +72,19 @@ end
 figure(1)
 hold on
 for iSIR = 1:length(SIRs)
-    plot(pFalseAlarmAnalytical(iSIR,:), pDetectionAnalytical(iSIR, :), LineWidth=1.5)
+    plot(pFalseAlarmAnalytical(iSIR,:), pDetectionAnalytical(iSIR, :), LineWidth=3)
 end
 set(gca,'ColorOrderIndex',1)
 for iSIR = 1:length(SIRs)
-    plot(pFalseAlarmNumerical(iSIR,:), pDetectionNumerical(iSIR, :),'x', LineWidth=1.5)
+    plot(pFalseAlarmNumerical(iSIR,:), pDetectionNumerical(iSIR, :),'k--', LineWidth=2)
 end
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location='best')
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', 'Numerical', location='southeast')
 axis([1e-7, 1, 0, 1])
 
 
-%% P_FA contra eta 
+%% P_FA vs eta 
 figure(2)
 subplot(1,3,1)
 hold on
