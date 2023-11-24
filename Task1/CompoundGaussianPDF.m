@@ -14,7 +14,7 @@ function f = CompoundGaussianPDF(z, sigma)
 
     % REWRITE WITH ANALYTICAL FINDING:
 
-    f = besselk(0, abs(z)/sigma)/(2*pi*sigma^2);
+    f = besselk(0, 2*abs(z)/sigma)/(2*pi*(sigma/2)^2);
     
 
 end

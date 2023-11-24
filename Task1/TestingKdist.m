@@ -37,5 +37,39 @@ legend('CN', 'CG')
 
 
 %%
-sigma = 10;
-integral(@(a)CompoundGaussianPDF(a,0,sigma),-100, 100)
+clc
+
+sigma = 1;
+fComp = @(a,b)besselk(0, 2*sqrt(a.^2+b.^2)./sigma)/(2*pi*(sigma/2)^2);
+fVar = @(a,b) (a.^2+b.^2).*besselk(0, 2*sqrt(a.^2+b.^2)./sigma)/(2*pi*(sigma/2)^2);
+integral2(fComp ,-100, 100, -100, 100);
+Var = integral2(fVar, -100, 100, -100, 100)
+sigmaNy = sqrt(Var);
+
+
+% sigmaCN = 2*sigma = sqrt(variance)
+
+%
+f1dim = @(x) besselk(0, abs(x)/sigma)/(pi*sigma);
+f1dimVar = @(x) x.^2.*besselk(0, abs(x)/sigma)/(pi*sigma);
+integral(f1dim,-1000,1000);
+Var1dim = integral(f1dimVar,-1000,1000);
+sigma1dim = sqrt(Var1dim);
+
+
+sampleSize = 1e5;
+sigmaPrior = sigma;
+sample = SampleCompoundGaussian(sampleSize, 0, sigmaPrior);
+
+var(real(sample))+var(imag(sample))
+
+
+
+
+
+
+
+
+
+
+
