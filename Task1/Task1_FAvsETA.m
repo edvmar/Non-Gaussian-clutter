@@ -7,11 +7,12 @@
 clear
 clc
 
-sampleSize = 2*1e6;
+sampleSize = 1e8;
 
 numberOfEtaValues = 1000;
 maxEta = 4*1e5;
-etaValues = [linspace(0.5, 5000, numberOfEtaValues*0.5),linspace(5000, maxEta, numberOfEtaValues*0.5)]; 
+etaValuesCN = [linspace(0.5, 5000, numberOfEtaValues*0.5),linspace(5000, maxEta, numberOfEtaValues*0.5)];
+etaValuesCG = [linspace(0.5, 200, numberOfEtaValues*0.2),linspace(200, 1e4, numberOfEtaValues*0.8)];
 
 
 detectorSigma = 1; % The standard deviation for the detector
@@ -33,52 +34,53 @@ clutterSampleCN = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); 
 clutterSampleCG = SampleCompoundGaussian(sampleSize, clutterMean, clutterSigma); % ?
 %signalSampleCG = clutterSampleCG + s;
 
+sumFA_CNCN = zeros(1, numberOfEtaValues);
+sumFA_CNCG = zeros(1, numberOfEtaValues);
+sumFA_CGCN = zeros(1, numberOfEtaValues);
+sumFA_CGCG = zeros(1, numberOfEtaValues);
 
+% False Alarm (*)
+fH1_fa_CNCN = ComplexGaussianPDF(clutterSampleCN, detectorMean + s, detectorSigma); 
+fH0_fa_CNCN = ComplexGaussianPDF(clutterSampleCN, detectorMean, detectorSigma);
 
-pFalseAlarmCNCN = zeros(1, numberOfEtaValues);
-pFalseAlarmCNCG = zeros(1, numberOfEtaValues);
-pFalseAlarmCGCN = zeros(1, numberOfEtaValues);
-pFalseAlarmCGCG = zeros(1, numberOfEtaValues);
+fH1_fa_CNCG = ComplexGaussianPDF(clutterSampleCG, detectorMean + s, detectorSigma); 
+fH0_fa_CNCG = ComplexGaussianPDF(clutterSampleCG, detectorMean, detectorSigma);
+
+fH1_fa_CGCN = CompoundGaussianPDF(clutterSampleCN, detectorMean + s, detectorSigma); 
+fH0_fa_CGCN = CompoundGaussianPDF(clutterSampleCN, detectorMean, detectorSigma);
+
+fH1_fa_CGCG = CompoundGaussianPDF(clutterSampleCG, detectorMean + s, detectorSigma); 
+fH0_fa_CGCG = CompoundGaussianPDF(clutterSampleCG, detectorMean, detectorSigma);
+
 
 
 for iEta=1:numberOfEtaValues
-    eta = etaValues(iEta); 
+    etaCN = etaValuesCN(iEta);
+    etaCG = etaValuesCG(iEta);
     
-    % False Alarm 
-    fH1_fa = ComplexGaussianPDF(clutterSampleCN, detectorMean + s, detectorSigma); 
-    fH0_fa = ComplexGaussianPDF(clutterSampleCN, detectorMean, detectorSigma);
-    sumFA_CNCN = sum(((fH1_fa./fH0_fa) > eta));
+    sumFA_CNCN(1, iEta) = sum(((fH1_fa_CNCN./fH0_fa_CNCN) > etaCN));
 
-    % False Alarm 
-    fH1_fa = ComplexGaussianPDF(clutterSampleCG, detectorMean + s, detectorSigma); 
-    fH0_fa = ComplexGaussianPDF(clutterSampleCG, detectorMean, detectorSigma);
-    sumFA_CNCG = sum(((fH1_fa./fH0_fa) > eta));
+    sumFA_CNCG(1, iEta) = sum(((fH1_fa_CNCG./fH0_fa_CNCG) > etaCN));
 
-    % False Alarm 
-    fH1_fa = CompoundGaussianPDF(clutterSampleCN, detectorMean + s, detectorSigma); 
-    fH0_fa = CompoundGaussianPDF(clutterSampleCN, detectorMean, detectorSigma);
-    sumFA_CGCN = sum(((fH1_fa./fH0_fa) > eta));
+    sumFA_CGCN(1, iEta) = sum(((fH1_fa_CGCN./fH0_fa_CGCN) > etaCG));
 
-    % False Alarm 
-    fH1_fa = CompoundGaussianPDF(clutterSampleCG, detectorMean + s, detectorSigma); 
-    fH0_fa = CompoundGaussianPDF(clutterSampleCG, detectorMean, detectorSigma);
-    sumFA_CGCG = sum(((fH1_fa./fH0_fa) > eta));
-    
-
-
-    pFalseAlarmCNCN(iEta) = sumFA_CNCN/sampleSize;
-    pFalseAlarmCNCG(iEta) = sumFA_CNCG/sampleSize;
-    pFalseAlarmCGCN(iEta) = sumFA_CGCN/sampleSize;
-    pFalseAlarmCGCG(iEta) = sumFA_CGCG/sampleSize;
-
+    sumFA_CGCG(1, iEta) = sum(((fH1_fa_CGCG./fH0_fa_CGCG) > etaCG));
+   
+    iEta
 end
+
+pFalseAlarmCNCN = sumFA_CNCN/sampleSize;
+pFalseAlarmCNCG = sumFA_CNCG/sampleSize;
+pFalseAlarmCGCN = sumFA_CGCN/sampleSize;
+pFalseAlarmCGCG = sumFA_CGCG/sampleSize;
+
 
 
 %% Plotting
 subplot(1,2,1)
 hold on
-plot(etaValues,pFalseAlarmCNCN, LineWidth=1.5)
-plot(etaValues,pFalseAlarmCNCG, LineWidth=1.5)
+plot(etaValuesCN,pFalseAlarmCNCN, LineWidth=1.5)
+plot(etaValuesCN,pFalseAlarmCNCG, LineWidth=1.5)
 set(gca, 'YScale', 'log');
 ylabel('P_{FA}'), xlabel('\eta')
 legend('CN-CN', 'CN-CG', location='best')
@@ -87,8 +89,8 @@ axis([0, maxEta, 1e-8, 1])
 subplot(1,2,2)
 set(gca,'ColorOrderIndex',3)
 hold on
-plot(etaValues,pFalseAlarmCGCN, LineWidth=1.5)
-plot(etaValues,pFalseAlarmCGCG, LineWidth=1.5)
+plot(etaValuesCG,pFalseAlarmCGCN, LineWidth=1.5)
+plot(etaValuesCG,pFalseAlarmCGCG, LineWidth=1.5)
 set(gca, 'YScale', 'log');
 ylabel('P_{FA}'), xlabel('\eta')
 legend('CG-CN','CG-CG', location='best')
