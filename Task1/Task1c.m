@@ -11,14 +11,14 @@ clc
 SIRs = [0, 3, 10, 13]; % dB 
 
 numberOfEtaValues = 1000;
-maxEta = 5*1e5;
-etaValues = {linspace(0.5, 1000, numberOfEtaValues),...
-             [linspace(0.5, 200, numberOfEtaValues*0.1),linspace(200, 1e4, numberOfEtaValues*0.9)],...
-             [linspace(0.5, 2000, numberOfEtaValues*0.5),linspace(2000, maxEta, numberOfEtaValues*0.5)], ...
-             [linspace(0.5, 2000, numberOfEtaValues*0.5),linspace(2000, maxEta, numberOfEtaValues*0.5)]}; 
+maxEta = 1e4;
+etaValues = {linspace(0.5, 500, numberOfEtaValues),...
+             [linspace(0.5, 200, numberOfEtaValues*0.5),linspace(200, 1e4, numberOfEtaValues*0.5)],...
+             [linspace(0.5, 200, numberOfEtaValues*0.3),linspace(200, maxEta, numberOfEtaValues*0.7)], ...
+             [linspace(0.5, 200, numberOfEtaValues*0.3),linspace(200, maxEta, numberOfEtaValues*0.7)]}; 
 
 
-sampleSize = 10^4; % 10^8 later? 
+sampleSize = 10^6; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
