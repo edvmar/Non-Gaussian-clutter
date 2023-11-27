@@ -1,6 +1,6 @@
-%%%%%%%%%%%%%%%%%%% Task 1 a Convergence %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Task 1 a Numerical and Analytical %%%%%%%%%%
 %
-% Analyzing the relation between P_FA and eta
+% Numerical and analytical ROC curves for the CN CN case
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
