@@ -18,15 +18,15 @@ etaValues = {linspace(0.5, 1000, numberOfEtaValues),...
              [linspace(0.5, 2000, numberOfEtaValues*0.5),linspace(2000, maxEta, numberOfEtaValues*0.5)]}; 
 
 
-sampleSize = 10^6; % 10^8 later? 
+sampleSize = 10^4; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
-clutterSigma = 1; % The standard deviation for the detector
-detectorMean = 0;
-clutterMean = 0;
+clutterSigma  = 1; % The standard deviation for the detector
+detectorMean  = 0;
+clutterMean   = 0;
 
 pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
-pDetection = zeros(length(SIRs), numberOfEtaValues);
+pDetection  = zeros(length(SIRs), numberOfEtaValues);
 
 for iSIR = 1:length(SIRs)
     
@@ -37,7 +37,7 @@ for iSIR = 1:length(SIRs)
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
     clutterSample = SampleCompoundGaussian(sampleSize, clutterMean, clutterSigma); 
-    signalSample = clutterSample + s;
+    signalSample  = clutterSample + s;
 
     for iEta=1:numberOfEtaValues
         eta = etaValues{iSIR}(iEta); 
@@ -54,7 +54,7 @@ for iSIR = 1:length(SIRs)
         sumTD = sum(((fH1_td./fH0_td) > eta));
 
         pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
-        pDetection(iSIR, iEta) = sumTD/sampleSize;
+        pDetection(iSIR, iEta)  = sumTD/sampleSize;
     end
 end 
 

@@ -14,8 +14,11 @@ function f = CompoundGaussianPDF(z, mean, sigma)
 
     % REWRITE WITH ANALYTICAL FINDING:
 
-    f = besselk(0, 2*abs(z-mean)/sigma)/(2*pi*(sigma/2)^2);
-    
+    % f = besselk(0, 2*abs(z-mean)/sigma)/(2*pi*(sigma/2)^2);
+
+
+    % Weibull
+    f = exp(-abs(z-mean)*sqrt(2)/sigma)./(pi*sqrt(2)*sigma*abs(z-mean));
 
 end
 

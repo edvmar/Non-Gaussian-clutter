@@ -52,8 +52,8 @@ plot(x, y1, 'b', LineWidth=1.5)
 plot(x, y2, 'r', LineWidth=1.5)
 legend('CN', 'CG')
 
-f=@(x) exp(-sqrt(2)*abs(x)/sigma)./(sqrt(2)*pi*abs(x));
-plot(x, f(x),'g',Linewidth = 1.5)
+% f=@(x) exp(-sqrt(2)*abs(x)/sigma)./(sqrt(2)*pi*abs(x));
+% plot(x, f(x),'g',Linewidth = 1.5)
 
 % fun=@(x,y) exp(-sqrt(2)*sqrt(x.^2+y.^2)/sigma)./(sqrt(2)*pi*(x.^2+y.^2));
 % integral2(fun ,-1000, 1000, -1000, 1000);
