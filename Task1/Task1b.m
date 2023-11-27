@@ -9,16 +9,29 @@ clc
 
 
 SIRs = [0, 3, 10, 13]; % dB 
+numberOfEtaValues = 2000;
+secLast = 0;
+probSecLast = [0.01, 0.01, 0.01, 0.01, 0.01, 0.03, 0.03, 0.05, 0.06, 0.09, 0.11, 0.14, 0.15, 0.15, 0.14] ;
+last = 0;
+probLast = [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.02, 0.03, 0.03, 0.03, 0.03, 0.04, 0.04, 0.04, 0.04,...
+    0.05, 0.05, 0.05, 0.06, 0.06, 0.08, 0.09, 0.09, 0.09];
+for i=1:length(probSecLast)
+    secLast = [secLast, linspace(10^(i-1), 10^i, numberOfEtaValues*probSecLast(i))];
+end
 
-numberOfEtaValues = 1000;
-maxEta = 5*1e5;
-etaValues = {linspace(0.5, 1000, numberOfEtaValues),...
-             [linspace(0.5, 200, numberOfEtaValues*0.1),linspace(200, 1e4, numberOfEtaValues*0.9)],...
-             [linspace(0.5, 1000, numberOfEtaValues*0.5),linspace(1000, maxEta, numberOfEtaValues*0.5)], ...
-             [linspace(0.5, 1000, numberOfEtaValues*0.5),linspace(1000, maxEta, numberOfEtaValues*0.5)]}; 
+for i=1:length(probLast)
+    last = [last, linspace(10^(i-1), 10^i, numberOfEtaValues*probLast(i))];
+end
+
+secLast = secLast + 0.5;
+last = last + 0.5;
+etaValues = {[linspace(0.5, 100, numberOfEtaValues*0.8),linspace(100, 1e4, numberOfEtaValues*0.2)],...
+             [linspace(0.5, 100, numberOfEtaValues*0.1),linspace(100, 1e4, numberOfEtaValues*0.9)],...
+             secLast, ...
+             last}; 
 
 
-sampleSize = 10^4; % 10^8 later? 
+sampleSize = 10^6; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
@@ -29,10 +42,10 @@ clutterMean = 0;
 % pDetection = zeros(length(SIRs), numberOfEtaValues);
 sumFA = zeros(length(SIRs), numberOfEtaValues);
 sumTD = zeros(length(SIRs), numberOfEtaValues);
-
+iter = 0;
 tic
 for iSIR = 1:length(SIRs)
-    
+    iSIR
     SIR = 10^(SIRs(iSIR)/10);           
     alpha = clutterSigma*sqrt(SIR);             
    
@@ -60,7 +73,6 @@ for iSIR = 1:length(SIRs)
         % True Detection (**)
         sumTD(iSIR, iEta) = sum(((fH1_td./fH0_td) > eta));
 
-        iEta
     end
     
 end 
