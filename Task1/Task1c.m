@@ -18,16 +18,17 @@ etaValues = {linspace(0.5, 1000, numberOfEtaValues),...
              [linspace(0.5, 2000, numberOfEtaValues*0.5),linspace(2000, maxEta, numberOfEtaValues*0.5)]}; 
 
 
-sampleSize = 10^6; % 10^8 later? 
+sampleSize = 10^4; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
 detectorMean = 0;
 clutterMean = 0;
 
-pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
-pDetection = zeros(length(SIRs), numberOfEtaValues);
+sumFA = zeros(length(SIRs), numberOfEtaValues);
+sumTD = zeros(length(SIRs), numberOfEtaValues);
 
+tic
 for iSIR = 1:length(SIRs)
     
     SIR = 10^(SIRs(iSIR)/10);           
@@ -39,24 +40,30 @@ for iSIR = 1:length(SIRs)
     clutterSample = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); 
     signalSample = clutterSample + s;
 
+    % False Alarm (*)
+    fH1_fa = CompoundGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH0_fa = CompoundGaussianPDF(clutterSample, detectorMean, detectorSigma);
+
+    % True Detection (**)
+    fH1_td = CompoundGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH0_td = CompoundGaussianPDF(signalSample, detectorMean, detectorSigma);
+
     for iEta=1:numberOfEtaValues
         eta = etaValues{iSIR}(iEta); 
 
+        % False Alarm (*)
+        sumFA(iSIR, iEta) = sum(((fH1_fa./fH0_fa) > eta));
         
-        % False Alarm 
-        fH1_fa = CompoundGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
-        fH0_fa = CompoundGaussianPDF(clutterSample, detectorMean, detectorSigma);
-        sumFA = sum(((fH1_fa./fH0_fa) > eta));
-        
-        % True Detection
-        fH1_td = CompoundGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
-        fH0_td = CompoundGaussianPDF(signalSample, detectorMean, detectorSigma);
-        sumTD = sum(((fH1_td./fH0_td) > eta));
+        % True Detection (**)
+        sumTD(iSIR, iEta) = sum(((fH1_td./fH0_td) > eta));
 
-        pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
-        pDetection(iSIR, iEta) = sumTD/sampleSize;
+        iEta
     end
 end 
+toc
+
+pFalseAlarm = sumFA/sampleSize;
+pDetection  = sumTD/sampleSize;
 
 %% Plotting 
 figure(2)
