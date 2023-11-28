@@ -18,7 +18,7 @@ etaValues = {linspace(0.5, 1000, numberOfEtaValues),...
              [linspace(0.5, 2000, numberOfEtaValues*0.5),linspace(2000, maxEta, numberOfEtaValues*0.5)]}; 
 
 
-sampleSize = 10^8; % 10^8 later? 
+sampleSize = 10^4; % 10^8 later? 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma  = 1; % The standard deviation for the detector
@@ -46,21 +46,23 @@ for iSIR = 1:length(SIRs)
     % False Alarm (*)
     fH1_fa = CompoundGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
     fH0_fa = CompoundGaussianPDF(clutterSample, detectorMean, detectorSigma);
+    LRT_fa = fH1_fa./fH0_fa;
 
     % True Detection (**)
     fH1_td = CompoundGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
     fH0_td = CompoundGaussianPDF(signalSample, detectorMean, detectorSigma);
+    LRT_td = fH1_td./fH0_td;
 
     for iEta=1:numberOfEtaValues
         iEta
         eta = etaValues{iSIR}(iEta); 
         
         % False Alarm (*)
-        sumFA(iSIR, iEta) = sum(((fH1_fa./fH0_fa) > eta));
+        sumFA(iSIR, iEta) = sum((LRT_fa > eta));
         % sumFA = sum(((fH1_fa./fH0_fa) > eta));
          
         % True Detection (**)
-        sumTD(iSIR, iEta) = sum(((fH1_td./fH0_td) > eta));
+        sumTD(iSIR, iEta) = sum((LRT_td > eta));
         % sumTD = sum(((fH1_td./fH0_td) > eta)); 
 
         % pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
