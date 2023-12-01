@@ -1,3 +1,10 @@
+%%%%%%%%%%% CalculatePulseCovariance %%%%%%%%%%%%%%%%%%%%%%%
+%
+% Calculates Sigma as a Toeplitz matrix and L : Sigma = LL^T
+% by Cholesky decomposition with diagonal loading.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function L = CalculatePulseCovariance(numberOfPulses, epsilon, delta)
     
     sigma = eye(numberOfPulses);

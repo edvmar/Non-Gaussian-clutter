@@ -1,14 +1,16 @@
 %%%%%%%%%%%%%% SampleComplexGaussionRow %%%%%%%%%%%%%%%%%
 %
-% Numerically samples a row of the CPI from CN(0,sigma^2)
+% Numerically samples a row of the CPI from CG(0,sigma^2)
 % rMax is the largest radii that we calculate the inverse for
 % Calculate the inverse numerically and choose closest value
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function clutterRow = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L)
+function clutterRow = SampleCompoundGaussianRow(numberOfPulses, rMax, nu, sigma, L)
     
-    F = @(x) 1 - exp(-abs(x).^2/sigma^2);  % eqn (12) 
+
+    eta = sigma^2;
+    F = @(x) 1 - (2*(sqrt(nu/eta).*abs(x)).^nu)/gamma(nu).*besselk(nu,2*sqrt(nu/eta)*abs(x));  % eqn (12)   (maybe nu-1 or nu in Bessel ??)
 
     xValues = linspace(0, rMax, rMax*1000);
     yValues = F(xValues);

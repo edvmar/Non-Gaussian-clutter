@@ -4,9 +4,11 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-F = @(x) 1 - exp(-abs(x).^2);  % eqn (12)
+sigma = 1;
+F = @(x) 1 - exp(-abs(x).^2/sigma^2);  % eqn (12)
 
-radii = linspace(0, 5, 1000);
+xmax = 4*sigma;
+radii = linspace(0, xmax, 1000);
 values = F(radii);
 
 n = 1e3;
@@ -25,11 +27,11 @@ end
 
 %% K - dist
 nu = 1;
-eta = 1;
+eta = sigma^2;
 
 F = @(x) 1 - (2*(sqrt(nu/eta).*abs(x)).^nu)/gamma(nu).*besselk(nu,2*sqrt(nu/eta)*abs(x));  % eqn (12)   (maybe nu-1 or nu in Bessel ??)
 
-radii = linspace(0, 5, 1000);
+radii = linspace(0, 2*xmax, 1000);
 values = F(radii);
 
 uniforms = rand(1,n);
@@ -45,8 +47,7 @@ for i = 1:n
     sample2(i) = exp(thetas*1i)*radius; 
 end
 
-
-
+%%
 figure(1)
 subplot(1,2,1)
 histogram2(real(sample1), imag(sample1))
@@ -57,15 +58,16 @@ figure(2)
 subplot(1,2,1)
 plot(real(sample1), imag(sample1), 'bo')
 axis equal
-axis([-4 4 -4 4])
+%xmax=2*xmax;
+axis([-xmax xmax -xmax xmax])
 subplot(1,2,2)
 plot(real(sample2), imag(sample2), 'ro')
 axis equal
-axis([-4 4 -4 4])
+axis([-xmax xmax -xmax xmax])
 %
-x = linspace(-4,4);
-sigma = 1/sqrt(2);
-f = @(x) 1/(sqrt(2*pi*sigma^2))*exp(-x.^2/(2*sigma^2));
+x = linspace(-xmax,xmax);
+sigma1D = sigma/sqrt(2);
+f = @(x) 1/(sqrt(2*pi*sigma1D^2))*exp(-x.^2/(2*sigma1D^2));
 figure(3)
 
 subplot(1,2,1)
