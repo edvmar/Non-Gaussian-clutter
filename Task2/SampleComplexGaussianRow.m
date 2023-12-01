@@ -1,6 +1,6 @@
 function clutterRow = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L)
     
-    F = @(x) 1 - exp(-abs(x).^2);  % eqn (12) sigma? 
+    F = @(x) 1 - exp(-abs(x).^2/sigma^2);  % eqn (12) sigma? 
 
     xValues = linspace(0, rMax, rMax*1000);
     yValues = F(xValues);
