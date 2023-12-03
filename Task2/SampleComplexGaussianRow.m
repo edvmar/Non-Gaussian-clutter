@@ -8,8 +8,10 @@
 
 function clutterRow = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L)
     
+    % cdf
     F = @(x) 1 - exp(-abs(x).^2/sigma^2);  % eqn (12) 
-
+    
+    % Table for cdf x,y values
     xValues = linspace(0, rMax, rMax*1000);
     yValues = F(xValues);
 
