@@ -7,14 +7,15 @@
 
 function L = CalculatePulseCovariance(numberOfPulses, epsilon, delta)
     
-    sigma = eye(numberOfPulses);
+    % Matrices for row and column indeces
+    indeces = 1:numberOfPulses;
+    iRow = repmat(indeces',1, width(indeces));
+    jColumn = repmat(indeces, width(indeces),1);
     
-    for i = 1:numberOfPulses
-        for j = 1:numberOfPulses
-            sigma(i,j) = exp(-(i-j)^2*delta);
-        end
-    end
+    % Sigma matrix
+    sigma = exp(-(iRow-jColumn).^2*delta);
     
+    % Covariance
     L = chol(sigma + epsilon*eye(numberOfPulses));
 end
 
