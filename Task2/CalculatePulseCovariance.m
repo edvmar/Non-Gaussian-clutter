@@ -5,7 +5,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function L = CalculatePulseCovariance(numberOfPulses, epsilon, delta)
+function toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, epsilon, delta)
     
     % Matrices for row and column indeces
     indeces = 1:numberOfPulses;
@@ -13,9 +13,7 @@ function L = CalculatePulseCovariance(numberOfPulses, epsilon, delta)
     jColumn = repmat(indeces, width(indeces),1);
     
     % Toeplitz matrix
-    sigma = exp(-(iRow-jColumn).^2*delta);
+    toeplitzMatrix = exp(-(iRow-jColumn).^2*delta);
     
-    % Covariance
-    L = chol(sigma + epsilon*eye(numberOfPulses));
 end
 
