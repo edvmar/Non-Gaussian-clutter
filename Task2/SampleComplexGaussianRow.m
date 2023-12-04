@@ -6,17 +6,17 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function clutterRow = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L)
+function rangeBin = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L)
     
     % cdf
-    F = @(x) 1 - exp(-abs(x).^2/sigma^2);  % eqn (12) 
+    F = @(x) 1 - TailDistributionComplexGaussian(x, 0, sigma);  % eqn (12) 
     
     % Table for cdf x,y values
     xValues = linspace(0, rMax, rMax*1000);
     yValues = F(xValues);
 
-    uniformSample = rand(1,numberOfPulses);
-    xSample = zeros(numberOfPulses,1);
+    uniformSample = rand(1, numberOfPulses);
+    xSample = zeros(numberOfPulses, 1);
     
     % Sample x
     for j = 1:numberOfPulses
@@ -29,7 +29,7 @@ function clutterRow = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L)
     end
 
     % d_k = L x
-    clutterRow = L*xSample;
+    rangeBin = L*xSample;
 
 end
 

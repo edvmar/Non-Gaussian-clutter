@@ -6,11 +6,10 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function clutterRow = SampleCompoundGaussianRow(numberOfPulses, rMax, nu, sigma, L)
+function rangeBin = SampleCompoundGaussianRow(numberOfPulses, rMax, nu, sigma, L)
     
     % cdf
-    eta = sigma^2;
-    F = @(x) 1 - (2*(sqrt(nu/eta).*abs(x)).^nu)/gamma(nu).*besselk(nu,2*sqrt(nu/eta)*abs(x));  % eqn (12)   (maybe nu-1 or nu in Bessel ??)
+    F = @(x) 1 - TailDistributionCompoundGaussian(x, 0, sigma, nu);
 
     % table for cdf x,y values 
     xValues = linspace(0, rMax, rMax*1000);
@@ -30,7 +29,7 @@ function clutterRow = SampleCompoundGaussianRow(numberOfPulses, rMax, nu, sigma,
     end
 
     % d_k = L x
-    clutterRow = L*xSample;
+    rangeBin = L*xSample;
 
 end
 
