@@ -29,7 +29,7 @@ function rangeBin = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L)
     end
 
     % d_k = L x
-    rangeBin = L*xSample;
+    rangeBin = (L*xSample)';
 
 end
 

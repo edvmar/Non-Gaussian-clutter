@@ -16,7 +16,7 @@ function rangeBin = SampleCompoundGaussianRow(numberOfPulses, rMax, nu, sigma, L
     yValues = F(xValues);
 
     uniformSample = rand(1,numberOfPulses);
-    xSample = zeros(numberOfPulses,1);
+    xSample = zeros(numberOfPulses, 1);
     
     % Sample x
     for j = 1:numberOfPulses
@@ -29,7 +29,7 @@ function rangeBin = SampleCompoundGaussianRow(numberOfPulses, rMax, nu, sigma, L
     end
 
     % d_k = L x
-    rangeBin = L*xSample;
+    rangeBin = (L*xSample)';
 
 end
 
