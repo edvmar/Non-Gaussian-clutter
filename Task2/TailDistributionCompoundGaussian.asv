@@ -1,9 +1,0 @@
-function h_N = TailDistributionCompoundGaussian(x, N, sigma, nu)
-    
-    % Tail distribution with derivatives
-    eta = sigma^2;
-
-    h_N = (nu/eta)^N/gamma(nu)*2*sqrt(nu/eta).*abs(x).^(nu-N)   (2*(sqrt(nu/eta).*abs(x)).^nu)/gamma(nu).*besselk(nu,2*sqrt(nu/eta)*abs(x));  
-    % (maybe nu-1 or nu in Bessel ??)
-    
-end
