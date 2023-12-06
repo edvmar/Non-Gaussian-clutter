@@ -1,8 +1,9 @@
-function h_N = TailDistributionComplexGaussian(x, N, sigma)
+function h_N = TailDistributionComplexGaussian(y, numberOfPulses, sigma)
     
     % Tail distribution with derivatives
+    N = numberOfPulses;
     eta = sigma^2;
-    h_N = exp(-abs(x).^2/eta) / eta^N;
+    h_N = exp(-y/eta) / eta^N;
     
 end
 

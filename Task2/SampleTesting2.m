@@ -13,7 +13,9 @@ numberOfPulses = 1;
 epsilon = 1e-8;
 delta = 1/numberOfPulses;
 
-L = CalculatePulseCovariance(numberOfPulses, epsilon, delta);
+toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, delta);
+L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
+toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 sample1 = zeros(1,sampleSize);
 sample2 = zeros(1,sampleSize);

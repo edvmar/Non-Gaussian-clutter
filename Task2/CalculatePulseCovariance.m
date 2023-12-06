@@ -5,7 +5,7 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, epsilon, delta)
+function toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, delta)
     
     % Matrices for row and column indeces
     indeces = 1:numberOfPulses;
