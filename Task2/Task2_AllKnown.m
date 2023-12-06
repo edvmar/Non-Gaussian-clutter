@@ -5,11 +5,13 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clc, clear, close all
+clear
+clc
 
 sampleSize = 1e4;
+
 sigma = 1;
-rMax  = 10*sigma; % R values calculating for the inverse
+rMax  = 10*sigma; % standardavvikelser
 
 
 numberOfPulses    = 10; % 128
@@ -27,7 +29,7 @@ SIR = 10^(SIR/10);
 alpha = sigma*sqrt(SIR);
 signal = alpha*steeringVector;
 
-toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
+toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, delta);
 L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
@@ -46,8 +48,7 @@ LR_TD = zeros(1, sampleSize);
 % Sampling.. gör snabbare senare 
 for i = 1:sampleSize
     
-    F = @(x) 1 - TailDistributionComplexGaussian(abs(x).^2, 0, sigma);  % eqn (12) 
-    CUTnoSignal = Sampling(numberOfPulses, rMax, L, F);
+    CUTnoSignal = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L);
     CUTsignal = CUTnoSignal + signal;
     
     % pFA
