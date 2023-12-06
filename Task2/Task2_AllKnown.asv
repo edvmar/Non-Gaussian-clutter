@@ -42,27 +42,28 @@ LR_FA = zeros(1, sampleSize);
 LR_TD = zeros(1, sampleSize);
 
 % Complex Gaussian
-F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma);  % eqn (12) 
-h_n = @(x) H_nGaussian(x, numberOfPulses, sigma);
+F = @(x) 1 - TailDistributionComplexGaussian(abs(x).^2, 0, sigma);  % eqn (12) 
 
-% complex K distribution
 
 % Sampling.. gör snabbare senare 
 for i = 1:sampleSize
     
-    CUTWithoutTheSignal = Sampling(numberOfPulses, rMax, sigma, L, F); % Feels better having two different rows
-    CUTWithSignal = Sampling(numberOfPulses, rMax, sigma, L, F) + signal; 
+    CUTWithoutTheSignal = Sampling(numberOfPulses, rMax, sigma, L, F);
     
+
     % pFA
     q0_H0 = real(CUTWithoutTheSignal*toeplitzMatrixInverse*CUTWithoutTheSignal');
     q1_H0 = real((CUTWithoutTheSignal-signal)*toeplitzMatrixInverse*(CUTWithoutTheSignal-signal)');
-    LR_FA(i) = h_n(q1_H0)/h_n(q0_H0);
+    LR_FA(i) = TailDistributionComplexGaussian(q1_H0, numberOfPulses, sigma)/...
+                   TailDistributionComplexGaussian(q0_H0, numberOfPulses, sigma);
     
 
+    CUTWithSignal = Sampling(numberOfPulses, rMax, sigma, L, F) + signal;
     % pTD
-    q0_H1 = real(CUTWithSignal*toeplitzMatrixInverse*CUTWithSignal');
-    q1_H1 = real((CUTWithSignal-signal)*toeplitzMatrixInverse*(CUTWithSignal-signal)');
-    LR_TD(i) = h_n(q1_H1)/h_n(q0_H1);
+    q0_H1 = real(CUTsignal*toeplitzMatrixInverse*CUTsignal');
+    q1_H1 = real((CUTsignal-signal)*toeplitzMatrixInverse*(CUTsignal-signal)');
+    LR_TD(i) = TailDistributionComplexGaussian(q1_H1, numberOfPulses, sigma)/...
+                    TailDistributionComplexGaussian(q0_H1, numberOfPulses, sigma);
 
 end
 
@@ -73,11 +74,13 @@ for iEta = 1:numberOfEtaValues
 
         sumFA(1, iEta) = sum((LR_FA>eta));
         sumTD(1, iEta) = sum((LR_TD>eta));
+
 end
 
 pFalseAlarm = sumFA/sampleSize;
 pDetection = sumTD/sampleSize;
 
+%%
 hold on
 %for iSIR = 1:length(SIRs)
 %    plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
