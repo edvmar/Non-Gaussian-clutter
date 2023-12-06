@@ -45,7 +45,6 @@ sumTD = zeros(1, numberOfEtaValues);
 F = @(x) 1 - TailDistributionComplexGaussian(abs(x).^2, 0, sigma);  % eqn (12) 
 h_n = @(x) TailDistributionComplexGaussian(x, numberOfPulses, sigma);
 
-<<<<<<< Updated upstream
 % Complex K distribution
 % Add later depending on what they say
 
@@ -77,38 +76,6 @@ for iEta = 1:numberOfEtaValues
 
     sumFA(1, iEta) = sum((LR_FA>eta));
     sumTD(1, iEta) = sum((LR_TD>eta));
-
-LR_FA = zeros(1, sampleSize);
-LR_TD = zeros(1, sampleSize);
-for iEta = 1:numberOfEtaValues
-
-    eta = etaValues(iEta);
-% Sampling.. gör snabbare senare 
-for i = 1:sampleSize
-    
-    CUTnoSignal = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L);
-    CUTsignal = CUTnoSignal + signal;
-    
-    % pFA
-    q0_H0 = real(CUTnoSignal*toeplitzMatrixInverse*CUTnoSignal');
-    q1_H0 = real((CUTnoSignal-signal)*toeplitzMatrixInverse*(CUTnoSignal-signal)');
-    LR_FA(i) = TailDistributionComplexGaussian(q1_H0, numberOfPulses, sigma)/...
-                   TailDistributionComplexGaussian(q0_H0, numberOfPulses, sigma);
-    
-    % pTD
-    q0_H1 = real(CUTsignal*toeplitzMatrixInverse*CUTsignal');
-    q1_H1 = real((CUTsignal-signal)*toeplitzMatrixInverse*(CUTsignal-signal)');
-    LR_TD(i) = TailDistributionComplexGaussian(q1_H1, numberOfPulses, sigma)/...
-                    TailDistributionComplexGaussian(q0_H1, numberOfPulses, sigma);
-
-end
-
-
-
-        sumFA(1, iEta) = sum((LR_FA>eta));
-        sumTD(1, iEta) = sum((LR_TD>eta));
-
->>>>>>> Stashed changes
 end
 
 pFalseAlarm = sumFA/sampleSize;
