@@ -13,7 +13,7 @@ delta   = 1/numberOfPulses; % (or 1/numberOfPulses^2)
 omegaD  = pi/3; % or 2*pi/numberOfPulsses???
 signal = exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses);
 
-toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, epsilon, delta);
+toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
@@ -93,9 +93,6 @@ CUTsignal = CPI(k0,:) + signal;
 % pDetection  = sumTD/sampleSize;
 % 
 % % plot(pFalseAlarm, pDetection)
-
-
-
 
 
 

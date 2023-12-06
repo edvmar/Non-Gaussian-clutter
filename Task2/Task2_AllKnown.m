@@ -5,16 +5,14 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clear
-clc
+clc, clear, close all
 
 
 
 
 sampleSize = 1e4;
-
 sigma = 1;
-rMax  = 10*sigma; % standardavvikelser
+rMax  = 10*sigma; % R values calculating for the inverse
 
 numberOfPulses    = 10; % 128
 numberOfDistances = 8;  % 100
@@ -31,7 +29,7 @@ SIR = 10^(SIR/10);
 alpha = sigma*sqrt(SIR);
 signal = alpha*steeringVector;
 
-toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, delta);
+toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
@@ -50,28 +48,6 @@ h_n = @(x) TailDistributionComplexGaussian(x, numberOfPulses, sigma);
 % Complex K distribution
 % Add later depending on what they say
 
-<<<<<<< HEAD
-=======
-% Sampling.. gör snabbare senare 
-for i = 1:sampleSize
-    
-    CUTnoSignal = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L);
-    CUTsignal = CUTnoSignal + signal;
-    
-    % pFA
-    q0_H0 = real(CUTnoSignal*toeplitzMatrixInverse*CUTnoSignal');
-    q1_H0 = real((CUTnoSignal-signal)*toeplitzMatrixInverse*(CUTnoSignal-signal)');
-    LR_FA(i) = TailDistributionComplexGaussian(q1_H0, numberOfPulses, sigma)/...
-                   TailDistributionComplexGaussian(q0_H0, numberOfPulses, sigma);
-    
-    % pTD
-    q0_H1 = real(CUTsignal*toeplitzMatrixInverse*CUTsignal');
-    q1_H1 = real((CUTsignal-signal)*toeplitzMatrixInverse*(CUTsignal-signal)');
-    LR_TD(i) = TailDistributionComplexGaussian(q1_H1, numberOfPulses, sigma)/...
-                    TailDistributionComplexGaussian(q0_H1, numberOfPulses, sigma);
-
-end
->>>>>>> parent of d3b0e7e (Changes)
 
 
 for iEta = 1:numberOfEtaValues
