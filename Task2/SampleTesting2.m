@@ -7,15 +7,14 @@ clear
 clc
 sampleSize = 1e3;
 sigma = 1;
-nu = 1;
+nu = 0.5;
 rMax = 4*sigma;
 numberOfPulses = 1;
 epsilon = 1e-8;
 delta = 1/numberOfPulses;
 
-toeplitzMatrix = CalculatePulseCovariance(numberOfPulses, delta);
+toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
-toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 sample1 = zeros(1,sampleSize);
 sample2 = zeros(1,sampleSize);

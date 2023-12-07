@@ -5,34 +5,41 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clc, clear, close all
+clc, clear%, close all
 
-
+tic 
 sampleSize = 1e4;
 sigma = 1;
-rMax  = 10*sigma; % standardavvikelser
+rMax  = 10*sigma; % standardavvikelser kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
-numberOfDistances = 8;  % 100
+numberOfPulses    = 128; % 128
+numberOfDistances = 1;  % 100
 
-epsilon = 1e-10;      
-delta   = 1/numberOfPulses; % (or 1/numberOfPulses^2)
+epsilon = 1e-6;  
+k = 1;
+delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
+% Seems to be something wrong with Toeplitz. 
 
-omegaD  = 1e-7; % Check later.. 
+radialVelocity = 100; % m/s
+omegaD  = 2*pi*2*radialVelocity/3e8;
+
 steeringVector = exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses);
 
-SIR = 10; % Loopa flera SIRS sen?
+SIR = 5; % Loopa flera SIRS sen?
 %SIRs = [0, 3, 10, 13]; % dB 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 signal = alpha*steeringVector;
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
+%toeplitzMatrix = eye(numberOfPulses);
 L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
 toeplitzMatrixInverse = inv(toeplitzMatrix);
+det(toeplitzMatrix)
 
 
-numberOfEtaValues = 5000;
+%%
+numberOfEtaValues = 500;
 etaValues = linspace(0.001, 100, numberOfEtaValues);
 
 sumFA = zeros(1, numberOfEtaValues); % Add for other clutters
@@ -42,16 +49,20 @@ LR_FA = zeros(1, sampleSize);
 LR_TD = zeros(1, sampleSize);
 
 % Complex Gaussian
-F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma);  % eqn (12) 
-h_n = @(x) H_nGaussian(x, numberOfPulses, sigma);
+F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma);  % eqn (12)    % Clutter dist
+h_n = @(x) H_nGaussian(x, numberOfPulses, sigma);             % Detector dist
 
 % complex K distribution
+nu = 0.01;
+%F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu);  % eqn (12)  % Clutter dist
+%h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu);           % Detector dist
+
 
 % Sampling.. gör snabbare senare 
 for i = 1:sampleSize
     
-    CUTWithoutTheSignal = Sampling(numberOfPulses, rMax, sigma, L, F); % Feels better having two different rows
-    CUTWithSignal = Sampling(numberOfPulses, rMax, sigma, L, F) + signal; 
+    CUTWithoutTheSignal = Sampling(numberOfPulses, rMax, sigma, L, F);
+    CUTWithSignal = CUTWithoutTheSignal + signal; 
     
     % pFA
     q0_H0 = real(CUTWithoutTheSignal*toeplitzMatrixInverse*CUTWithoutTheSignal');
@@ -78,6 +89,9 @@ end
 pFalseAlarm = sumFA/sampleSize;
 pDetection = sumTD/sampleSize;
 
+toc
+
+%%
 hold on
 %for iSIR = 1:length(SIRs)
 %    plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)

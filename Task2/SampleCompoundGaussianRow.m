@@ -12,7 +12,7 @@ function rangeBin = SampleCompoundGaussianRow(numberOfPulses, rMax, nu, sigma, L
     F = @(x) 1 - TailDistributionCompoundGaussian(abs(x).^2, 0, sigma, nu);
 
     % table for cdf x,y values 
-    xValues = linspace(0, rMax, rMax*1000);
+    xValues = linspace(0.01, rMax, rMax*1000);
     yValues = F(xValues);
 
     uniformSample = rand(1,numberOfPulses);

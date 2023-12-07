@@ -9,7 +9,7 @@
 function rangeBin = SampleComplexGaussianRow(numberOfPulses, rMax, sigma, L, F)
     
     % cdf
-    F = @(x) 1 - TailDistributionComplexGaussian(abs(x).^2, 0, sigma);  % eqn (12) 
+    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma);  % eqn (12) 
     
     % Table for cdf x,y values
     domain = linspace(0, rMax, rMax*1000);
