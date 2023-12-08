@@ -12,11 +12,11 @@ sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % standardavvikelser kanske större för Kdist? 
 
-numberOfPulses    = 12; % 128
+numberOfPulses    = 10; % 128
 numberOfDistances = 1;  % 100
 
-diagonalLoad = 1e-6;  % used in cholensky matrix to get numeriall stable stuff
-k = 1;
+epsilon = 1e-6;  
+k = 0;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 % Seems to be something wrong with Toeplitz. 
 
@@ -29,25 +29,20 @@ SIR = 5; % Loopa flera SIRS sen?
 %SIRs = [0, 3, 10, 13]; % dB 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
-signal = alpha*steeringVector;
+signal = alpha*steeringVector';
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 %toeplitzMatrix = eye(numberOfPulses);
-L = chol(toeplitzMatrix + diagonalLoad*eye(numberOfPulses));
+L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
 toeplitzMatrixInverse = inv(toeplitzMatrix);
-determinatantToeplitz = det(toeplitzMatrix)
+det(toeplitzMatrix)
 
 
-
-%%
 numberOfEtaValues = 500;
 etaValues = linspace(0.001, 100, numberOfEtaValues);
 
 sumFA = zeros(1, numberOfEtaValues); % Add for other clutters
 sumTD = zeros(1, numberOfEtaValues);
-
-LR_FA = zeros(1, sampleSize);
-LR_TD = zeros(1, sampleSize);
 
 % Complex Gaussian
 F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma);  % eqn (12)    % Clutter dist
@@ -55,29 +50,25 @@ h_n = @(x) H_nGaussian(x, numberOfPulses, sigma);             % Detector dist
 
 % complex K distribution
 nu = 0.01;
-F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu);  % eqn (12)  % Clutter dist
-h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu);           % Detector dist
+%F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu);  % eqn (12)  % Clutter dist
+%h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu);           % Detector dist
 
 
-% Sampling.. gör snabbare senare 
-for i = 1:sampleSize
-    
-    CUTWithoutTheSignal = Sampling(numberOfPulses, rMax, sigma, L, F);
-    CUTWithSignal = CUTWithoutTheSignal + signal; 
-    
-    % pFA
-    q0_H0 = real(CUTWithoutTheSignal*toeplitzMatrixInverse*CUTWithoutTheSignal');
-    q1_H0 = real((CUTWithoutTheSignal-signal)*toeplitzMatrixInverse*(CUTWithoutTheSignal-signal)');
-    LR_FA(i) = h_n(q1_H0)/h_n(q0_H0);
-    
+% Sampling.. gör snabbare senare
+CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
+CUTWithSignal = CUTWithoutSignal + signal; 
 
-    % pTD
-    q0_H1 = real(CUTWithSignal*toeplitzMatrixInverse*CUTWithSignal');
-    q1_H1 = real((CUTWithSignal-signal)*toeplitzMatrixInverse*(CUTWithSignal-signal)');
-    LR_TD(i) = h_n(q1_H1)/h_n(q0_H1);
 
-end
+% pFA
+q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
+q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signal,toeplitzMatrixInverse));
+LR_FA = h_n(q1_H0)./h_n(q0_H0);
 
+
+% pTD
+q0_H1 = real(MultidimensionalNorm(CUTWithSignal,toeplitzMatrixInverse)); 
+q1_H1 = real(MultidimensionalNorm(CUTWithSignal-signal,toeplitzMatrixInverse));
+LR_TD = h_n(q1_H1)./h_n(q0_H1);
 
 for iEta = 1:numberOfEtaValues
 
