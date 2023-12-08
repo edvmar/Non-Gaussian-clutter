@@ -16,7 +16,7 @@ numberOfPulses    = 10; % 128
 numberOfDistances = 1;  % 100
 
 epsilon = 1e-6;  
-k = 1;
+k = 0;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 % Seems to be something wrong with Toeplitz. 
 
@@ -29,7 +29,7 @@ SIR = 5; % Loopa flera SIRS sen?
 %SIRs = [0, 3, 10, 13]; % dB 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
-signal = alpha*steeringVector;
+signal = alpha*steeringVector';
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 %toeplitzMatrix = eye(numberOfPulses);
@@ -55,20 +55,20 @@ nu = 0.01;
 
 
 % Sampling.. gör snabbare senare
-    CUTWithoutTheSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
-    CUTWithSignal = CUTWithoutTheSignal + signal'; 
+    CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
+    CUTWithSignal = CUTWithoutSignal + signal; 
     
 
     % pFA
-    q0_H0 = real(CUTWithoutTheSignal*toeplitzMatrixInverse*CUTWithoutTheSignal');
-    q1_H0 = real((CUTWithoutTheSignal-signal)*toeplitzMatrixInverse*(CUTWithoutTheSignal-signal)');
-    LR_FA = h_n(q1_H0)/h_n(q0_H0);
+    q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
+    q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signal,toeplitzMatrixInverse));
+    LR_FA = h_n(q1_H0)./h_n(q0_H0);
     
 
     % pTD
-    q0_H1 = real(CUTWithSignal*toeplitzMatrixInverse*CUTWithSignal');
-    q1_H1 = real((CUTWithSignal-signal)*toeplitzMatrixInverse*(CUTWithSignal-signal)');
-    LR_TD = h_n(q1_H1)/h_n(q0_H1);
+    q0_H1 = real(MultidimensionalNorm(CUTWithSignal,toeplitzMatrixInverse)); 
+    q1_H1 = real(MultidimensionalNorm(CUTWithSignal-signal,toeplitzMatrixInverse));
+    LR_TD = h_n(q1_H1)./h_n(q0_H1);
 
 for iEta = 1:numberOfEtaValues
 
