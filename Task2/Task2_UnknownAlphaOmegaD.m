@@ -7,27 +7,38 @@
 
 clc, clear, close all
 
-tic 
+%% ================== Parameters ========================
+% --------- Simulation ---------
 sampleSize = 1e4;
 sigma = 1;
-rMax  = 10*sigma; % standardavvikelser kanske större för Kdist? 
+rMax  = 10*sigma; % kanske större för Kdist? 
 
 numberOfPulses    = 10; % 128
 numberOfDistances = 1;  % 100
 
-epsilon = 1e-6;  
-k = 0;
-delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
-% Seems to be something wrong with Toeplitz. 
-
-numberOfOmegas = 3;
-radialVelocity = linspace(1, 100, numberOfOmegas); % m/s
-omegaD  = 2*pi*2*radialVelocity/3e8;
-
-SIR = 5; % Loopa flera SIRS sen?
-%SIRs = [0, 3, 10, 13]; % dB 
+% --------- Signal ----------- 
+SIR = 5; 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
+
+% Actual signal
+actualRadialVelocity = 25e6; %m/s TODO: Borde < 100 m/s
+omegaD  = 2*pi*2*actualRadialVelocity/3e8;
+steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
+signal = alpha*steeringVector;
+
+% Test signals 
+numberOfOmegas = 5;
+maxRadialVelocity = 3e7; % m/s TODO: borde vara 100 m/s
+radialVelocities = [linspace(1, maxRadialVelocity, numberOfOmegas-1)]; % m/s
+radialVelocities = [radialVelocities, actualRadialVelocity];
+omegaDs  = 2*pi*2*radialVelocities/3e8;
+
+
+% ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
+epsilon = 1e-6;  % diagonal load
+k = 0;
+delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 %toeplitzMatrix = eye(numberOfPulses);
@@ -35,10 +46,38 @@ L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 det(toeplitzMatrix)
 
-
-%%
+% -----  Threshold values ------
 numberOfEtaValues = 500;
-etaValues = linspace(0.001, 10, numberOfEtaValues);
+etaValues = linspace(0.001, 100, numberOfEtaValues);
+
+
+% ------- Distributions ------------
+clutterDistribution  = 'CN';  % 'K' or 'CN'
+detectorDistribution = 'CN';
+nu = 1;
+
+
+if isequal(clutterDistribution,'CN')
+    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma); % eqn (12
+elseif isequal(clutterDistribution,'K')
+    F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu); % eqn (12)
+else 
+    error('Unknown clutter distribution');
+end
+
+if isequal(detectorDistribution,'CN')
+    h_n = @(x) H_nGaussian(x, numberOfPulses, sigma); % eqn (12
+elseif isequal(detectorDistribution,'K')
+    h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu); % eqn (12)
+else 
+    error('Unknown detector distribution');
+end
+
+
+
+
+%% ======================= Simulation ==================================
+tic
 
 sumFA = zeros(numberOfOmegas, numberOfEtaValues); % Add for other clutters
 sumTD = zeros(numberOfOmegas, numberOfEtaValues);
@@ -46,43 +85,25 @@ sumTD = zeros(numberOfOmegas, numberOfEtaValues);
 LR_FA = zeros(numberOfOmegas, sampleSize);
 LR_TD = zeros(numberOfOmegas, sampleSize);
 
-% Complex Gaussian
-F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma);  % eqn (12)    % Clutter dist
-h_n = @(x) H_nGaussian(x, numberOfPulses, sigma);             % Detector dist
-
-% complex K distribution
-nu = 0.01;
-%F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu);  % eqn (12)  % Clutter dist
-%h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu);           % Detector dist
+CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
+CUTWithActualSignal = CUTWithoutSignal + signal; 
 
 
-
-
-% Sampling.. gör snabbare senare 
-for iSample = 1:sampleSize
-
-    CUTWithoutTheSignal = Sampling(numberOfPulses, rMax, sigma, L, F);
-    for iOmegaD = 1:numberOfOmegas
-        steeringVector = exp( 1i*omegaD(iOmegaD)*(0:numberOfPulses - 1) )/sqrt(numberOfPulses);
-        steeringVectorNorm = steeringVector*toeplitzMatrixInverse*steeringVector';
-        signal = alpha*steeringVector; 
-        CUTWithSignal = CUTWithoutTheSignal + signal; 
-        
-        % pFA
-        q0_H0 = real(CUTWithoutTheSignal*toeplitzMatrixInverse*CUTWithoutTheSignal');
-        q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutTheSignal,toeplitzMatrixInverse,...
-                                                steeringVector, steeringVectorNorm);
-        LR_FA(iOmegaD, iSample) = h_n(q1_H0)/h_n(q0_H0);
-        
+for iOmegaD = 1:numberOfOmegas
+    steeringVector = (exp( 1i*omegaDs(iOmegaD)*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
+    steeringVectorNorm = steeringVector'*toeplitzMatrixInverse*steeringVector;
     
-        % pTD
-        q0_H1 = real(CUTWithSignal*toeplitzMatrixInverse*CUTWithSignal');
-        q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithSignal,toeplitzMatrixInverse,...
-                                                steeringVector, steeringVectorNorm);
-        LR_TD(iOmegaD, iSample) = h_n(q1_H1)/h_n(q0_H1);
-
-
-    end
+    % pFA
+    q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
+    q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutSignal,toeplitzMatrixInverse,...
+                                            steeringVector, steeringVectorNorm);
+    LR_FA(iOmegaD,:) = h_n(q1_H0)./h_n(q0_H0);
+    
+    % pTD
+    q0_H1 = real(MultidimensionalNorm(CUTWithActualSignal,toeplitzMatrixInverse)); 
+    q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithActualSignal,toeplitzMatrixInverse,...
+                                            steeringVector, steeringVectorNorm);
+    LR_TD(iOmegaD,:) = h_n(q1_H1)./h_n(q0_H1);
 end
 
 
@@ -101,15 +122,16 @@ pDetection  = sumTD/sampleSize;
 
 toc
 
-%%
+%% ============================ Plotting =====================
 hold on
-for iOmegaD = 1:numberOfOmegas
+for iOmegaD = 1:numberOfOmegas-1
    plot(pFalseAlarm(iOmegaD,:), pDetection(iOmegaD, :), LineWidth=1.5)
 end
+plot(pFalseAlarm(numberOfOmegas,:), pDetection(numberOfOmegas, :), 'k--', LineWidth=1.5) % NOTE: Last index is the actual
 plot([0,1],[0,1])
 %set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-%legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'southeast')
+legend('w1', 'w2', 'w3', 'w4','wActual', location = 'southeast')
 %axis([1e-7, 1, 0, 1])
 
 

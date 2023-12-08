@@ -10,7 +10,7 @@ function rangeBin = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F)
     
     
     % Table for cdf x,y values
-    domain = linspace(0, rMax, rMax*10);
+    domain = linspace(0, rMax, rMax*100); % Byt till inget rMax beroende?
     range = F(domain)';
     range_rep = repmat(range,1,sampleSize)';
 

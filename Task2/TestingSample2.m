@@ -5,10 +5,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
 clc
-sampleSize = 1e3;
+sampleSize = 1e4;
 sigma = 1;
-nu = 0.5;
-rMax = 4*sigma;
+nu = 1;
+rMax = 10*sigma;
 numberOfPulses = 1;
 epsilon = 1e-8;
 delta = 1/numberOfPulses;
@@ -16,13 +16,17 @@ delta = 1/numberOfPulses;
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
 
-sample1 = zeros(1,sampleSize);
-sample2 = zeros(1,sampleSize);
 
-for i = 1:sampleSize
-    sample1(i) = SampleComplexGaussianRow(1, rMax, sigma, L);
-    sample2(i) = SampleCompoundGaussianRow(1, rMax, nu, sigma, L);
-end
+F_CG = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma);  % eqn (12)    % Clutter dist
+h_n_CG = @(x) H_nGaussian(x, numberOfPulses, sigma);             % Detector dist
+
+% complex K distribution
+F_K = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu);  % eqn (12)  % Clutter dist
+h_n_K = @(x) H_nKdist(x, numberOfPulses, sigma, nu); 
+
+
+sample1 = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F_CG);
+sample2 = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F_K);
 
 %%
 figure(1)
