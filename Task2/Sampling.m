@@ -29,7 +29,7 @@ function rangeBin = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F)
     end
 
     % d_k = L x
-    rangeBin = (L*xSample);
+    rangeBin = xSample;
 
 end
 

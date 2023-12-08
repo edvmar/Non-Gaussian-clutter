@@ -13,7 +13,7 @@ sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
+numberOfPulses    = 5; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
@@ -35,7 +35,7 @@ delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 %toeplitzMatrix = eye(numberOfPulses);
 L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
-toeplitzMatrixInverse = inv(toeplitzMatrix);
+%toeplitzMatrixInverse = inv(toeplitzMatrix);
 det(toeplitzMatrix)
 
 % -----  Threshold values ------
@@ -74,14 +74,19 @@ sumTD = zeros(1, numberOfEtaValues);
 CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
 CUTWithSignal = CUTWithoutSignal + signal; 
 
+
+invLs = L\signal;
+xTx = real(MultidimensionalNorm(CUTWithoutSignal,eye(numberOfPulses)));
+tmp = CUTWithoutSignal'*invLs; 
+
 % pFA
-q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
-q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signal,toeplitzMatrixInverse));
+q0_H0 = xTx; 
+q1_H0 = xTx - 2*real(tmp)' + invLs'*invLs;
 LR_FA = h_n(q1_H0)./h_n(q0_H0);
 
 % pTD
-q0_H1 = real(MultidimensionalNorm(CUTWithSignal,toeplitzMatrixInverse)); 
-q1_H1 = real(MultidimensionalNorm(CUTWithSignal-signal,toeplitzMatrixInverse));
+q0_H1 = xTx + 2*real(tmp)' + invLs'*invLs;
+q1_H1 = xTx;
 LR_TD = h_n(q1_H1)./h_n(q0_H1);
 
 for iEta = 1:numberOfEtaValues
@@ -111,6 +116,13 @@ xlabel('P_{FA}'), ylabel('P_{TD}')
 
 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Using Andreas method of just using L.
+% Seems to be exactly the same as with inv(Toeplitz)... 
+%
+%
+%
 
 
 
