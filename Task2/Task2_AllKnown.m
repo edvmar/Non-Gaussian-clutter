@@ -12,10 +12,10 @@ sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % standardavvikelser kanske större för Kdist? 
 
-numberOfPulses    = 128; % 128
+numberOfPulses    = 12; % 128
 numberOfDistances = 1;  % 100
 
-epsilon = 1e-6;  
+diagonalLoad = 1e-6;  % used in cholensky matrix to get numeriall stable stuff
 k = 1;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 % Seems to be something wrong with Toeplitz. 
@@ -33,9 +33,10 @@ signal = alpha*steeringVector;
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
 %toeplitzMatrix = eye(numberOfPulses);
-L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
+L = chol(toeplitzMatrix + diagonalLoad*eye(numberOfPulses));
 toeplitzMatrixInverse = inv(toeplitzMatrix);
-det(toeplitzMatrix)
+determinatantToeplitz = det(toeplitzMatrix)
+
 
 
 %%
@@ -54,8 +55,8 @@ h_n = @(x) H_nGaussian(x, numberOfPulses, sigma);             % Detector dist
 
 % complex K distribution
 nu = 0.01;
-%F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu);  % eqn (12)  % Clutter dist
-%h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu);           % Detector dist
+F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu);  % eqn (12)  % Clutter dist
+h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu);           % Detector dist
 
 
 % Sampling.. gör snabbare senare 

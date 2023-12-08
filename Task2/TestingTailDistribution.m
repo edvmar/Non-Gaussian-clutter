@@ -1,5 +1,3 @@
-
-
 clc
 clear
 
@@ -7,7 +5,7 @@ x = linspace(0.01,5);
 
 
 sigma = 1;
-N = 12;
+N = 2;
 nu = 1;
 
 

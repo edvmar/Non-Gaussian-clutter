@@ -10,7 +10,7 @@ function q1 = CalculateQ1WithEstimatedAlpha(z,toeplitzMatrixInverse,...
 
     p = steeringVector;
 
-    q1 = z*toeplitzMatrixInverse*z' - abs(p*toeplitzMatrixInverse*p')^2/steeringVectorNorm;
+    q1 = z*toeplitzMatrixInverse*z' - abs(p*toeplitzMatrixInverse*z')^2/steeringVectorNorm;
     
     q1 = real(q1);
 

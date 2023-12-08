@@ -1,7 +1,7 @@
-%%%%%%%%%%%%%% Task2 All known %%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Task2 UnkownAlpha %%%%%%%%%%%%%%
 %
 % Produces ROC curves for the 1D case where both 
-% signal and clutter are known
+% signal and clutter are known unkown alpha
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -12,11 +12,11 @@ sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % standardavvikelser kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
+numberOfPulses    = 128; % 128
 numberOfDistances = 1;  % 100
 
 epsilon = 1e-6;  
-k = 1;
+k = 0;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 % Seems to be something wrong with Toeplitz. 
 
