@@ -55,20 +55,20 @@ nu = 0.01;
 
 
 % Sampling.. gör snabbare senare
-    CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
-    CUTWithSignal = CUTWithoutSignal + signal; 
-    
+CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
+CUTWithSignal = CUTWithoutSignal + signal; 
 
-    % pFA
-    q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
-    q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signal,toeplitzMatrixInverse));
-    LR_FA = h_n(q1_H0)./h_n(q0_H0);
-    
 
-    % pTD
-    q0_H1 = real(MultidimensionalNorm(CUTWithSignal,toeplitzMatrixInverse)); 
-    q1_H1 = real(MultidimensionalNorm(CUTWithSignal-signal,toeplitzMatrixInverse));
-    LR_TD = h_n(q1_H1)./h_n(q0_H1);
+% pFA
+q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
+q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signal,toeplitzMatrixInverse));
+LR_FA = h_n(q1_H0)./h_n(q0_H0);
+
+
+% pTD
+q0_H1 = real(MultidimensionalNorm(CUTWithSignal,toeplitzMatrixInverse)); 
+q1_H1 = real(MultidimensionalNorm(CUTWithSignal-signal,toeplitzMatrixInverse));
+LR_TD = h_n(q1_H1)./h_n(q0_H1);
 
 for iEta = 1:numberOfEtaValues
 
