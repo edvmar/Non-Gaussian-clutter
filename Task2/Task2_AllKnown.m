@@ -21,11 +21,7 @@ radialVelocity = 25; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 
-SIR = 10; % Loopa flera SIRS sen?
-%SIRs = [0, 3, 10, 13]; % dB 
-SIR = 10^(SIR/10);           
-alpha = sigma*sqrt(SIR);
-signal = alpha*steeringVector;
+SIRs = [0, 3, 10, 13]; % dB 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
@@ -33,7 +29,6 @@ k = 1;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
-%toeplitzMatrix = eye(numberOfPulses);
 L = chol(toeplitzMatrix, 'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
@@ -66,29 +61,37 @@ end
 
 %% ======================= Simulation ==================================
 tic
-sumFA = zeros(1, numberOfEtaValues); % Add for other clutters
-sumTD = zeros(1, numberOfEtaValues);
 
-% Sampling
-CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
-CUTWithSignal = CUTWithoutSignal + signal; 
+sumFA = zeros(length(SIRs), numberOfEtaValues); 
+sumTD = zeros(length(SIRs), numberOfEtaValues);
 
-% pFA
-q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
-q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signal,toeplitzMatrixInverse));
-LR_FA = h_n(q1_H0)./h_n(q0_H0);
+for iSIR = 1:length(SIRs)
 
-% pTD
-q0_H1 = real(MultidimensionalNorm(CUTWithSignal,toeplitzMatrixInverse)); 
-q1_H1 = real(MultidimensionalNorm(CUTWithSignal-signal,toeplitzMatrixInverse));
-LR_TD = h_n(q1_H1)./h_n(q0_H1);
+    SIR = 10^(SIRs(iSIR)/10);           
+    alpha = sigma*sqrt(SIR);
+    signal = alpha*steeringVector;
 
-for iEta = 1:numberOfEtaValues
-
-        eta = etaValues(iEta);
-
-        sumFA(1, iEta) = sum((LR_FA>eta));
-        sumTD(1, iEta) = sum((LR_TD>eta));
+    % Sampling
+    CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
+    CUTWithSignal = CUTWithoutSignal + signal; 
+    
+    % pFA
+    q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
+    q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signal,toeplitzMatrixInverse));
+    LR_FA = h_n(q1_H0)./h_n(q0_H0);
+    
+    % pTD
+    q0_H1 = real(MultidimensionalNorm(CUTWithSignal,toeplitzMatrixInverse)); 
+    q1_H1 = real(MultidimensionalNorm(CUTWithSignal-signal,toeplitzMatrixInverse));
+    LR_TD = h_n(q1_H1)./h_n(q0_H1);
+    
+    for iEta = 1:numberOfEtaValues
+    
+            eta = etaValues(iEta);
+    
+            sumFA(iSIR, iEta) = sum((LR_FA>eta));
+            sumTD(iSIR, iEta) = sum((LR_TD>eta));
+    end
 end
 
 pFalseAlarm = sumFA/sampleSize;
@@ -98,15 +101,14 @@ toc
 
 %% ============================ Plotting =====================
 hold on
-%for iSIR = 1:length(SIRs)
-%    plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
-%end
-plot(pFalseAlarm, pDetection, LineWidth = 1.5)
-plot([0,1],[0,1])
-%set(gca, 'XScale', 'log');
+for iSIR = 1:length(SIRs)
+    plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
+end
+%plot([0,1],[0,1])
+set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-%legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'southeast')
-%axis([1e-7, 1, 0, 1])
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'best')
+axis([1e-7, 1, 0, 1])
 
 
 

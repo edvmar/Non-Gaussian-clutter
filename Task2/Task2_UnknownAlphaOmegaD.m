@@ -13,16 +13,16 @@ sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
+numberOfPulses    = 128; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-SIR = 5; 
+SIR = 20; 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 
 % Actual signal
-actualRadialVelocity = 25; %m/s TODO: Borde < 100 m/s
+actualRadialVelocity = 25; %m/s 
 omegaD  = 2*pi*2*actualRadialVelocity/3e8;
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 signal = alpha*steeringVector;
