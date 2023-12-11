@@ -17,21 +17,21 @@ numberOfPulses    = 128; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-SIR = 20; 
+SIR = 20; % dB
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 
 % Actual signal
-actualRadialVelocity = 25; %m/s 
+actualRadialVelocity = 4.8e5; % 25 m/s 
 omegaD  = 2*pi*2*actualRadialVelocity/3e8;
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 signal = alpha*steeringVector;
 
 % Test signals 
 numberOfOmegas = 5;
-maxRadialVelocity = 100; % m/s TODO: borde vara 100 m/s
-radialVelocities = [linspace(1, maxRadialVelocity, numberOfOmegas-1)]; % m/s
-radialVelocities = [radialVelocities, actualRadialVelocity];
+maxRadialVelocity = 1e6; % m/s TODO: borde vara 100 m/s
+radialVelocities = [linspace(1e4, maxRadialVelocity, numberOfOmegas-1)]; % m/s
+radialVelocities = [radialVelocities, actualRadialVelocity]
 omegaDs  = 2*pi*2*radialVelocities/3e8;
 
 
@@ -127,10 +127,11 @@ for iOmegaD = 1:numberOfOmegas-1
    plot(pFalseAlarm(iOmegaD,:), pDetection(iOmegaD, :), LineWidth=1.5)
 end
 plot(pFalseAlarm(numberOfOmegas,:), pDetection(numberOfOmegas, :), 'k--', LineWidth=1.5) % NOTE: Last index is the actual
-plot([0,1],[0,1])
+plot([0,1],[0,1],'k:')
 %set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('w1', 'w2', 'w3', 'w4','wActual', location = 'southeast')
+%legend('1 m/s', '34 m/s', '67 m/s', '100 m/s','25 m/s (actual)', location = 'southeast')
+legend('1.0e4 m/s', '3.4e5 m/s', '6.7e5 m/s', '1.0e6 m/s','4.8e5 m/s (actual)', location = 'southeast')
 %axis([1e-7, 1, 0, 1])
 
 

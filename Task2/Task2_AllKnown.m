@@ -9,7 +9,7 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4;
+sampleSize = 1e5;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -21,7 +21,7 @@ radialVelocity = 25; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 
-SIRs = [3, 13, 20, 25]; % dB % Större än tidigare, kan behövas.. 
+SIRs = [0, 5, 10, 20, 25]; % dB % Större än tidigare, kan behövas.. 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
@@ -66,7 +66,7 @@ sumFA = zeros(length(SIRs), numberOfEtaValues);
 sumTD = zeros(length(SIRs), numberOfEtaValues);
 
 for iSIR = 1:length(SIRs)
-
+    iSIR
     SIR = 10^(SIRs(iSIR)/10);           
     alpha = sigma*sqrt(SIR);
     signal = alpha*steeringVector;
@@ -107,7 +107,7 @@ end
 %plot([0,1],[0,1])
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'best')
+legend('SIR = 0', 'SIR = 5', 'SIR = 10', 'SIR = 20', 'SIR = 25', location = 'best')
 axis([1e-7, 1, 0, 1])
 
 
