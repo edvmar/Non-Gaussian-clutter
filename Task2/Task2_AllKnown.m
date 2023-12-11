@@ -13,34 +13,33 @@ sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
+numberOfPulses    = 128; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-radialVelocity = 100; % m/s
+radialVelocity = 25; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 
-SIR = 5; % Loopa flera SIRS sen?
+SIR = 10; % Loopa flera SIRS sen?
 %SIRs = [0, 3, 10, 13]; % dB 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 signal = alpha*steeringVector;
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
-epsilon = 1e-6;  % diagonal load
-k = 0;
+epsilon = 1e-10;  % diagonal load
+k = 1;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
-toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
+toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 %toeplitzMatrix = eye(numberOfPulses);
-L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
+L = chol(toeplitzMatrix, 'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
-det(toeplitzMatrix)
 
 % -----  Threshold values ------
-numberOfEtaValues = 500;
-etaValues = linspace(0.001, 100, numberOfEtaValues);
+numberOfEtaValues = 1000;
+etaValues = linspace(0.01, 100, numberOfEtaValues);
 
 % ------- Distributions ------------
 clutterDistribution  = 'CN';  % 'K' or 'CN'
@@ -49,7 +48,7 @@ nu = 1;
 
 
 if isequal(clutterDistribution,'CN')
-    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma); % eqn (12
+    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma); % eqn (12)
 elseif isequal(clutterDistribution,'K')
     F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu); % eqn (12)
 else 

@@ -17,7 +17,7 @@ numberOfPulses    = 10; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-radialVelocity = 100; % m/s
+radialVelocity = 25; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 
@@ -28,15 +28,14 @@ alpha = sigma*sqrt(SIR);
 signal = alpha*steeringVector;
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
-epsilon = 1e-6;  % diagonal load
-k = 0;
-delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
+epsilon = 1e-10;  % diagonal load
+k = 2;
+delta   = 0.5/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
-toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
+toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 %toeplitzMatrix = eye(numberOfPulses);
-L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
+L = chol(toeplitzMatrix, 'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
-det(toeplitzMatrix)
 
 % -----  Threshold values ------
 numberOfEtaValues = 500;
