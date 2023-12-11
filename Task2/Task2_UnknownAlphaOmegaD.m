@@ -13,38 +13,37 @@ sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
+numberOfPulses    = 128; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-SIR = 5; 
+SIR = 20; 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 
 % Actual signal
-actualRadialVelocity = 25e6; %m/s TODO: Borde < 100 m/s
+actualRadialVelocity = 25; %m/s 
 omegaD  = 2*pi*2*actualRadialVelocity/3e8;
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 signal = alpha*steeringVector;
 
 % Test signals 
 numberOfOmegas = 5;
-maxRadialVelocity = 3e7; % m/s TODO: borde vara 100 m/s
+maxRadialVelocity = 100; % m/s TODO: borde vara 100 m/s
 radialVelocities = [linspace(1, maxRadialVelocity, numberOfOmegas-1)]; % m/s
 radialVelocities = [radialVelocities, actualRadialVelocity];
 omegaDs  = 2*pi*2*radialVelocities/3e8;
 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
-epsilon = 1e-6;  % diagonal load
-k = 0;
+epsilon = 1e-10;  % diagonal load
+k = 2;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
-toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
+toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 %toeplitzMatrix = eye(numberOfPulses);
-L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
+L = chol(toeplitzMatrix,'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
-det(toeplitzMatrix)
 
 % -----  Threshold values ------
 numberOfEtaValues = 500;
