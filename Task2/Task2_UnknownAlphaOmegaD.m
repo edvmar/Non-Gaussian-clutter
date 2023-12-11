@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%% Task2 All known %%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Task2 omega unknown %%%%%%%%%%%%%%
 %
 % Produces ROC curves for the 1D case where both 
 % signal and clutter are known
