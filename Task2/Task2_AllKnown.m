@@ -21,7 +21,7 @@ radialVelocity = 25; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 
-SIRs = [0, 3, 10, 13]; % dB 
+SIRs = [3, 13, 20, 25]; % dB % Större än tidigare, kan behövas.. 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
