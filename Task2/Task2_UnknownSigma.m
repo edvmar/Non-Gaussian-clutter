@@ -13,28 +13,29 @@ sampleSize = 1000;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 128; % 128
+numberOfPulses    = 10; % 128
 numberOfDistances = 100;  % 100
 
 % --------- Signal ----------- 
 radialVelocity = 100; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
-steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
+steeringVector = exp( 1i*omegaD*(0:numberOfPulses - 1))';
 
-SIR = 10; % Loopa flera SIRS sen?
+SIR = 3; % Loopa flera SIRS sen?
 %SIRs = [0, 3, 10, 13]; % dB 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 signal = alpha*steeringVector;
 
+
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
-k = 0;
+k = 1;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
-toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta);
+toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 %toeplitzMatrix = eye(numberOfPulses);
-L = chol(toeplitzMatrix + epsilon*eye(numberOfPulses));
+L = chol(toeplitzMatrix,'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
@@ -66,33 +67,34 @@ end
 
 %% ======================= Simulation ==================================
 tic
-sumFA = zeros(1, numberOfEtaValues); % Add for other clutters
+sumFA = zeros(1, numberOfEtaValues); 
 sumTD = zeros(1, numberOfEtaValues);
-row_where_signal = numberOfDistances-1;
+signalRow = numberOfDistances-1;
 
 for i=1:sampleSize
 % Sampling
     CPI = Sampling(numberOfPulses, numberOfDistances, rMax, sigma, L, F)';
-    CUTWithoutSignal = CPI(row_where_signal,:);
+    
+    CUTWithoutSignal = CPI(signalRow,:);
     CUTWithSignal = CUTWithoutSignal + signal';
     CPIWithoutSignal = CPI;
-    CPIWithoutSignal(row_where_signal,:) = [];
+    CPIWithoutSignal(signalRow,:) = [];
     
-    covarianceEst = 1/(numberOfDistances-1)*(CPIWithoutSignal')*CPIWithoutSignal;
-    covarianceEst = real(covarianceEst);
-    covarianceEstInverse = inv(covarianceEst);
+    covarianceEstimate = 1/(numberOfDistances-1)*(CPIWithoutSignal')*CPIWithoutSignal;
+    covarianceEstimate = real(covarianceEstimate);
+    covarianceEstimateInverse = inv(covarianceEstimate);
     
-    steeringVectorNorm = steeringVector'*covarianceEstInverse*steeringVector;
+    steeringVectorNorm = steeringVector'*covarianceEstimateInverse*steeringVector;
     
     % pFA
-    q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal',covarianceEstInverse)); 
-    q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutSignal',covarianceEstInverse,...
+    q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal',covarianceEstimateInverse)); 
+    q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutSignal',covarianceEstimateInverse,...
                                             steeringVector, steeringVectorNorm);
     LR_FA = h_n(q1_H0)./h_n(q0_H0);
     
     % pTD
-    q0_H1 = real(MultidimensionalNorm(CUTWithSignal',covarianceEstInverse)); 
-    q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithSignal',covarianceEstInverse,...
+    q0_H1 = real(MultidimensionalNorm(CUTWithSignal',covarianceEstimateInverse)); 
+    q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithSignal',covarianceEstimateInverse,...
                                             steeringVector, steeringVectorNorm);
     
     LR_TD = h_n(q1_H1)./h_n(q0_H1);

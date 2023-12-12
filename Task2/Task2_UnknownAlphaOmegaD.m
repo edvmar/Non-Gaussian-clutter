@@ -9,7 +9,7 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4;
+sampleSize = 1e3;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -17,27 +17,24 @@ numberOfPulses    = 128; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-SIR = 20; % dB
+SIR = 3; % dB
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 
 % Actual signal
-actualRadialVelocity = 4.8e5; % 25 m/s 
-omegaD  = 2*pi*2*actualRadialVelocity/3e8;
-steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
-signal = alpha*steeringVector;
+omegaDActual  = 0.01;
+steeringVectorActual = (exp( 1i*omegaDActual*(0:numberOfPulses - 1) ))';
+signalActual = alpha*steeringVectorActual;
 
 % Test signals 
-numberOfOmegas = 5;
-maxRadialVelocity = 1e6; % m/s TODO: borde vara 100 m/s
-radialVelocities = [linspace(1e4, maxRadialVelocity, numberOfOmegas-1)]; % m/s
-radialVelocities = [radialVelocities, actualRadialVelocity]
-omegaDs  = 2*pi*2*radialVelocities/3e8;
+numberOfOmegas = 1000;
+minOmegaD = 0.005;
+maxOmegaD = 0.05;
+testOmegaDs  = linspace(minOmegaD, maxOmegaD, numberOfOmegas);
 
-
-% ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
+% ------- Covariance ----------------
 epsilon = 1e-10;  % diagonal load
-k = 2;
+k = 1;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
@@ -46,8 +43,8 @@ L = chol(toeplitzMatrix,'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
-numberOfEtaValues = 500;
-etaValues = linspace(0.001, 100, numberOfEtaValues);
+numberOfEtaValues = 1000;
+etaValues = [linspace(1, 100, numberOfEtaValues*0.1),linspace(100, 100000, numberOfEtaValues*0.9)];
 
 
 % ------- Distributions ------------
@@ -73,66 +70,117 @@ else
 end
 
 
-
-
 %% ======================= Simulation ==================================
 tic
 
-sumFA = zeros(numberOfOmegas, numberOfEtaValues); % Add for other clutters
-sumTD = zeros(numberOfOmegas, numberOfEtaValues);
+sumFA = zeros(1, numberOfEtaValues); 
+sumTD = zeros(1, numberOfEtaValues);
+
+sumFA_UnknownAlpha = zeros(1, numberOfEtaValues); 
+sumTD_UnknownAlpha = zeros(1, numberOfEtaValues);
+
+sumFA_Actual = zeros(1, numberOfEtaValues); 
+sumTD_Actual = zeros(1, numberOfEtaValues);
 
 LR_FA = zeros(numberOfOmegas, sampleSize);
 LR_TD = zeros(numberOfOmegas, sampleSize);
 
 CUTWithoutSignal = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F);
-CUTWithActualSignal = CUTWithoutSignal + signal; 
+CUTWithActualSignal = CUTWithoutSignal + signalActual; 
 
 
 for iOmegaD = 1:numberOfOmegas
-    steeringVector = (exp( 1i*omegaDs(iOmegaD)*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
-    steeringVectorNorm = steeringVector'*toeplitzMatrixInverse*steeringVector;
+
+    steeringVectorTest = (exp( 1i*testOmegaDs(iOmegaD)*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
+    steeringVectorNorm = steeringVectorTest'*toeplitzMatrixInverse*steeringVectorTest;
     
     % pFA
     q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
     q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutSignal,toeplitzMatrixInverse,...
-                                            steeringVector, steeringVectorNorm);
+                                            steeringVectorTest, steeringVectorNorm);
     LR_FA(iOmegaD,:) = h_n(q1_H0)./h_n(q0_H0);
     
     % pTD
     q0_H1 = real(MultidimensionalNorm(CUTWithActualSignal,toeplitzMatrixInverse)); 
     q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithActualSignal,toeplitzMatrixInverse,...
-                                            steeringVector, steeringVectorNorm);
+                                            steeringVectorTest, steeringVectorNorm);
     LR_TD(iOmegaD,:) = h_n(q1_H1)./h_n(q0_H1);
 end
 
+% Sort out the max likely omegas 
+maxLR_FA = max(LR_FA);
+maxLR_TD = max(LR_TD);
 
+
+% ------- Unknown alpha ---------
+steeringVectorNormActual = steeringVectorActual'*toeplitzMatrixInverse*steeringVectorActual;
+
+% pFA
+q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); 
+q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutSignal,toeplitzMatrixInverse,...
+                                            steeringVectorActual, steeringVectorNormActual);
+LR_FA_UnknownAlpha = h_n(q1_H0)./h_n(q0_H0);
+
+
+% pTD
+q0_H1 = real(MultidimensionalNorm(CUTWithActualSignal,toeplitzMatrixInverse)); 
+q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithActualSignal,toeplitzMatrixInverse,...
+                                            steeringVectorActual, steeringVectorNormActual);
+LR_TD_UnknownAlpha = h_n(q1_H1)./h_n(q0_H1);
+
+
+% ------- All known -----------
+% pFA
+%q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,toeplitzMatrixInverse)); % Already calculated
+q1_H0 = real(MultidimensionalNorm(CUTWithoutSignal-signalActual,toeplitzMatrixInverse));
+LR_FA_Actual = h_n(q1_H0)./h_n(q0_H0);
+
+% pTD
+%q0_H1 = real(MultidimensionalNorm(CUTWithActualSignal,toeplitzMatrixInverse)); % Already calculated
+q1_H1 = real(MultidimensionalNorm(CUTWithActualSignal-signalActual,toeplitzMatrixInverse));
+LR_TD_Actual = h_n(q1_H1)./h_n(q0_H1);
+
+
+% ----------- Thresholds -----------
 for iEta = 1:numberOfEtaValues
     eta = etaValues(iEta);
-    for iOmegaD = 1:numberOfOmegas
+        
+    sumFA(iEta) = sum(maxLR_FA>eta);
+    sumTD(iEta) = sum(maxLR_TD>eta);
 
-        sumFA(iOmegaD, iEta) = sum((LR_FA(iOmegaD,:)>eta));
-        sumTD(iOmegaD, iEta) = sum((LR_TD(iOmegaD,:)>eta));
+    sumFA_UnknownAlpha(iEta) = sum((LR_FA_UnknownAlpha>eta));
+    sumTD_UnknownAlpha(iEta) = sum((LR_TD_UnknownAlpha>eta));
 
-    end
+    sumFA_Actual(iEta) = sum((LR_FA_Actual>eta));
+    sumTD_Actual(iEta) = sum((LR_TD_Actual>eta));
+
 end
 
 pFalseAlarm = sumFA/sampleSize;
 pDetection  = sumTD/sampleSize;
 
+pFalseAlarmUnknownAlpha = sumFA_UnknownAlpha/sampleSize;
+pDetectionUnknownAlpha  = sumTD_UnknownAlpha/sampleSize;
+
+pFalseAlarmActual = sumFA_Actual/sampleSize;
+pDetectionActual  = sumTD_Actual/sampleSize;
+
+
 toc
 
 %% ============================ Plotting =====================
+figure(1)
 hold on
-for iOmegaD = 1:numberOfOmegas-1
-   plot(pFalseAlarm(iOmegaD,:), pDetection(iOmegaD, :), LineWidth=1.5)
-end
-plot(pFalseAlarm(numberOfOmegas,:), pDetection(numberOfOmegas, :), 'k--', LineWidth=1.5) % NOTE: Last index is the actual
-plot([0,1],[0,1],'k:')
-%set(gca, 'XScale', 'log');
+plot(pFalseAlarm, pDetection, LineWidth=1.5)
+set(gca,'ColorOrderIndex',1)
+plot(pFalseAlarmUnknownAlpha, pDetectionUnknownAlpha,'--', LineWidth=1.5)
+set(gca,'ColorOrderIndex',1)
+plot(pFalseAlarmActual, pDetectionActual,'-.', LineWidth=1.5)
+%plot([0,1],[0,1],'k:')
+set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-%legend('1 m/s', '34 m/s', '67 m/s', '100 m/s','25 m/s (actual)', location = 'southeast')
-legend('1.0e4 m/s', '3.4e5 m/s', '6.7e5 m/s', '1.0e6 m/s','4.8e5 m/s (actual)', location = 'southeast')
-%axis([1e-7, 1, 0, 1])
+legend('Unknown', 'Known alpha', 'All known', location = 'best')
+axis([1e-7, 1, 0, 1])
 
 
 

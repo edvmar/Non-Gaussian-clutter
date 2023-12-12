@@ -9,22 +9,18 @@ clc, clear%,close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e3;
+sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 120; % 128
+numberOfPulses    = 128; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-radialVelocity = 10^7; % m/s
-omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
+omegaD = 0.01;
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) ))';
 
-%steeringVector = (exp( 1i*0.5*(0:numberOfPulses - 1)))';
-
-
-SIRs = [0];%, 5, 10, 20, 25]; % dB % Större än tidigare, kan behövas.. 
+SIRs = [0, 1, 3, 5]; % dB 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
@@ -37,7 +33,7 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 1000;
-etaValues = linspace(0.01, 100, numberOfEtaValues);
+etaValues = linspace(1, 1000, numberOfEtaValues);
 
 % ------- Distributions ------------
 clutterDistribution  = 'CN';  % 'K' or 'CN'
@@ -110,7 +106,7 @@ end
 %plot([0,1],[0,1])
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 5', 'SIR = 10', 'SIR = 20', 'SIR = 25', location = 'best')
+legend('SIR = 0', 'SIR = 1', 'SIR = 3', 'SIR = 5', location = 'best')
 axis([1e-7, 1, 0, 1])
 
 
