@@ -22,7 +22,7 @@ omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 
 %SIR = 5; % Loopa flera SIRS sen?
-SIRs = [0, 3, 10, 13, 20]; % dB 
+SIRs = [0, 5, 10, 20, 25]; % dB % Större än tidigare, kan behövas.. 
 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
@@ -36,7 +36,7 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 500;
-etaValues = linspace(0.001, 100, numberOfEtaValues);
+etaValues = linspace(0.01, 1000, numberOfEtaValues);
 
 % ------- Distributions ------------
 clutterDistribution  = 'CN';  % 'K' or 'CN'
@@ -109,11 +109,11 @@ hold on
 for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
-plot([0,1],[0,1],'k--')
-%set(gca, 'XScale', 'log');
+%plot([0,1],[0,1],'k--')
+set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'best')
-%axis([1e-7, 1, 0, 1])
+legend('SIR = 0', 'SIR = 5', 'SIR = 10', 'SIR = 20', 'SIR = 25', location = 'best')
+axis([1e-7, 1, 0, 1])
 
 
 

@@ -13,22 +13,22 @@ sampleSize = 1000;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
-numberOfDistances = 10;  % 100
+numberOfPulses    = 128; % 128
+numberOfDistances = 100;  % 100
 
 % --------- Signal ----------- 
 radialVelocity = 100; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
 
-SIR = 5; % Loopa flera SIRS sen?
+SIR = 10; % Loopa flera SIRS sen?
 %SIRs = [0, 3, 10, 13]; % dB 
 SIR = 10^(SIR/10);           
 alpha = sigma*sqrt(SIR);
 signal = alpha*steeringVector;
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
-epsilon = 1e-6;  % diagonal load
+epsilon = 1e-10;  % diagonal load
 k = 0;
 delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
@@ -39,7 +39,7 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 500;
-etaValues = linspace(0.1, 1000000z0, numberOfEtaValues);
+etaValues = [linspace(1,100, numberOfEtaValues*0.1),linspace(100, 100000, numberOfEtaValues*0.9)];
 
 % ------- Distributions ------------
 clutterDistribution  = 'CN';  % 'K' or 'CN'
@@ -115,10 +115,11 @@ hold on
 %for iSIR = 1:length(SIRs)
 %    plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 %end
-plot(pFalseAlarm, pDetection, LineWidth = 1.5)
-plot([0,1],[0,1])
+plot(pFalseAlarm, pDetection, ':',LineWidth = 1.5)
+plot([0,1],[0,1],'k:')
 %set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
+legend('SIR = 10', location = 'best')
 %legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'southeast')
 %axis([1e-7, 1, 0, 1])
 
