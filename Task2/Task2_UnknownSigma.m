@@ -30,8 +30,8 @@ signal = alpha*steeringVector;
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
-k = 1;
-delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
+k = 2;
+delta   = 0.5/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 %toeplitzMatrix = eye(numberOfPulses);
@@ -40,7 +40,7 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 500;
-etaValues = [linspace(1,100, numberOfEtaValues*0.1),linspace(100, 100000, numberOfEtaValues*0.9)];
+etaValues = [linspace(0.1,100, numberOfEtaValues*0.1),linspace(100, 100000, numberOfEtaValues*0.9)];
 
 % ------- Distributions ------------
 clutterDistribution  = 'CN';  % 'K' or 'CN'

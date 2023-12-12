@@ -25,8 +25,8 @@ SIRs = [0, 1, 3, 5]; % dB
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
-k = 1;
-delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
+k = 2;
+delta   = 0.5/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 L = chol(toeplitzMatrix, 'lower');

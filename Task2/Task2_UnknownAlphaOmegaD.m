@@ -9,7 +9,7 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e3;
+sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -23,19 +23,19 @@ alpha = sigma*sqrt(SIR);
 
 % Actual signal
 omegaDActual  = 0.01;
-steeringVectorActual = (exp( 1i*omegaDActual*(0:numberOfPulses - 1) ))';
+steeringVectorActual = (exp( 1i*omegaDActual*(0:numberOfPulses - 1)))';
 signalActual = alpha*steeringVectorActual;
 
 % Test signals 
-numberOfOmegas = 1000;
+numberOfOmegas = 100;
 minOmegaD = 0.005;
 maxOmegaD = 0.05;
 testOmegaDs  = linspace(minOmegaD, maxOmegaD, numberOfOmegas);
 
 % ------- Covariance ----------------
 epsilon = 1e-10;  % diagonal load
-k = 1;
-delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
+k = 2;
+delta   = 0.5/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 %toeplitzMatrix = eye(numberOfPulses);
@@ -44,7 +44,7 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 1000;
-etaValues = [linspace(1, 100, numberOfEtaValues*0.1),linspace(100, 100000, numberOfEtaValues*0.9)];
+etaValues = [linspace(0.1, 100, numberOfEtaValues*0.3),linspace(100, 10000, numberOfEtaValues*0.7)];
 
 
 % ------- Distributions ------------
@@ -111,7 +111,6 @@ end
 maxLR_FA = max(LR_FA);
 maxLR_TD = max(LR_TD);
 
-
 % ------- Unknown alpha ---------
 steeringVectorNormActual = steeringVectorActual'*toeplitzMatrixInverse*steeringVectorActual;
 
@@ -165,7 +164,6 @@ pDetectionUnknownAlpha  = sumTD_UnknownAlpha/sampleSize;
 pFalseAlarmActual = sumFA_Actual/sampleSize;
 pDetectionActual  = sumTD_Actual/sampleSize;
 
-
 toc
 
 %% ============================ Plotting =====================
@@ -179,7 +177,7 @@ plot(pFalseAlarmActual, pDetectionActual,'-.', LineWidth=1.5)
 %plot([0,1],[0,1],'k:')
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('Unknown', 'Known alpha', 'All known', location = 'best')
+legend('Unknowns', 'Unknown alpha', 'All known', location = 'best')
 axis([1e-7, 1, 0, 1])
 
 
