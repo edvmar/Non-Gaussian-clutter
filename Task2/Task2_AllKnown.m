@@ -5,23 +5,26 @@
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-clc, clear, close all
+clc, clear%,close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e5;
+sampleSize = 1e3;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 128; % 128
+numberOfPulses    = 120; % 128
 numberOfDistances = 1;  % 100
 
 % --------- Signal ----------- 
-radialVelocity = 25; % m/s
+radialVelocity = 10^7; % m/s
 omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
-steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
+steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) ))';
 
-SIRs = [0, 5, 10, 20, 25]; % dB % Större än tidigare, kan behövas.. 
+%steeringVector = (exp( 1i*0.5*(0:numberOfPulses - 1)))';
+
+
+SIRs = [0];%, 5, 10, 20, 25]; % dB % Större än tidigare, kan behövas.. 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
