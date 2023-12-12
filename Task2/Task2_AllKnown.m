@@ -9,7 +9,7 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4;
+sampleSize = 1e3;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -104,8 +104,8 @@ hold on
 for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
-%plot([0,1],[0,1])
-set(gca, 'XScale', 'log');
+plot([0,1],[0,1])
+%set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
 legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'best')
 axis([1e-7, 1, 0, 1])
