@@ -37,8 +37,8 @@ numberOfEtaValues = 1000;
 etaValues = [linspace(0.1, 10, numberOfEtaValues*0.1),linspace(10, 1000, numberOfEtaValues*0.9)];
 
 % ------- Distributions ------------
-clutterDistribution  = 'K';  % 'K' or 'CN'
-detectorDistribution = 'K';
+clutterDistribution  = 'CN';  % 'K' or 'CN'
+detectorDistribution = 'CN';
 nu = 1;
 
 
