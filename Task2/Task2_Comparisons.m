@@ -167,17 +167,17 @@ pDetectionActual  = sumTD_Actual/sampleSize;
 toc
 
 %% ============================ Plotting =====================
+load('Hej.mat')
 figure(1)
 hold on
+plot(pFalseAlarmActual, pDetectionActual, LineWidth=1.5)
+plot(pFalseAlarmUnknownAlpha, pDetectionUnknownAlpha, LineWidth=1.5)
 plot(pFalseAlarm, pDetection, LineWidth=1.5)
-set(gca,'ColorOrderIndex',1)
-plot(pFalseAlarmUnknownAlpha, pDetectionUnknownAlpha,'--', LineWidth=1.5)
-set(gca,'ColorOrderIndex',1)
-plot(pFalseAlarmActual, pDetectionActual,'-.', LineWidth=1.5)
+plot(hejPFA, hejPTD, LineWidth=1.5)
 %plot([0,1],[0,1],'k:')
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('Unknowns', 'Unknown alpha', 'All known', location = 'best',FontSize=12)
+legend( 'All known', 'Unknown \alpha','Unknown \alpha, \omega','Unknown \alpha, \omega, \Sigma', location = 'best',FontSize=14)
 axis([1e-7, 1, 0, 1])
 
 

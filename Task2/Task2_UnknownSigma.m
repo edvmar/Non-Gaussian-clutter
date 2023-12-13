@@ -9,7 +9,7 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e3;
+sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -17,7 +17,7 @@ numberOfPulses    = 128; % 128
 numberOfDistances = 100;  % 100
 
 % --------- Signal ----------- 
-SIRs = [3]%, 1, 3, 5]; % dB 
+SIRs = [0, 1, 3, 5]; % dB 
 
 % Actual signal
 omegaDActual  = 0.01;
@@ -41,7 +41,7 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 1000;
-etaValues = [linspace(0.1, 100, numberOfEtaValues*0.3),linspace(100, 10000, numberOfEtaValues*0.7)];
+etaValues = [linspace(0.1, 500, numberOfEtaValues*0.3),linspace(500, 1000000, numberOfEtaValues*0.7)];
 
 
 % ------- Distributions ------------
