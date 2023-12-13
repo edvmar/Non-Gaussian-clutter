@@ -9,7 +9,7 @@ clc, clear, close all
 
 % ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e3;
+sampleSize = 1e4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -33,12 +33,12 @@ L = chol(toeplitzMatrix, 'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
-numberOfEtaValues = 500;
-etaValues = linspace(0.1, 100, numberOfEtaValues);
+numberOfEtaValues = 1000;
+etaValues = [linspace(0.1, 10, numberOfEtaValues*0.1),linspace(10, 1000, numberOfEtaValues*0.9)];
 
 % ------- Distributions ------------
-clutterDistribution  = 'CN';  % 'K' or 'CN'
-detectorDistribution = 'CN';
+clutterDistribution  = 'K';  % 'K' or 'CN'
+detectorDistribution = 'K';
 nu = 1;
 
 
@@ -67,7 +67,7 @@ sumFA = zeros(length(SIRs), numberOfEtaValues);
 sumTD = zeros(length(SIRs), numberOfEtaValues);
 
 for iSIR = 1:length(SIRs)
-
+    iSIR
     SIR = 10^(SIRs(iSIR)/10);           
     alpha = sigma*sqrt(SIR);
     signal = alpha*steeringVector;
