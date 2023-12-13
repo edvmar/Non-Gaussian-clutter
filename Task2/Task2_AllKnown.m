@@ -105,8 +105,8 @@ for iSIR = 1:length(SIRs)
 end
 %plot([0,1],[0,1])
 set(gca, 'XScale', 'log');
-xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 1', 'SIR = 3', 'SIR = 5', location = 'best')
+xlabel('P_{FA}', FontSize=15), ylabel('P_{TD}',FontSize=15)
+legend('SIR = 0', 'SIR = 1', 'SIR = 3', 'SIR = 5', location = 'southeast',FontSize=15)
 axis([1e-7, 1, 0, 1])
 
 
