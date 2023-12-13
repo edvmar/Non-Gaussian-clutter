@@ -1,4 +1,4 @@
-%%%%%%%%%%%%%% Task2 All known %%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Task2 Sigma Unknown %%%%%%%%%%%%%%
 %
 % Produces ROC curves for the 1D case where both 
 % signal and clutter are known
@@ -9,26 +9,27 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1000;
+sampleSize = 1e3;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 10; % 128
+numberOfPulses    = 128; % 128
 numberOfDistances = 100;  % 100
 
 % --------- Signal ----------- 
-radialVelocity = 100; % m/s
-omegaD  = 2*pi*2*radialVelocity/3e8; % Doppler Freq
-steeringVector = exp( 1i*omegaD*(0:numberOfPulses - 1))';
+SIRs = [3]%, 1, 3, 5]; % dB 
 
-SIR = 3; % Loopa flera SIRS sen?
-%SIRs = [0, 3, 10, 13]; % dB 
-SIR = 10^(SIR/10);           
-alpha = sigma*sqrt(SIR);
-signal = alpha*steeringVector;
+% Actual signal
+omegaDActual  = 0.01;
+steeringVectorActual = (exp( 1i*omegaDActual*(0:numberOfPulses - 1)))';
 
+% Test signals 
+numberOfOmegas = 100;
+minOmegaD = 0.005;
+maxOmegaD = 0.05;
+testOmegaDs  = linspace(minOmegaD, maxOmegaD, numberOfOmegas);
 
-% ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
+% ------- Covariance ----------------
 epsilon = 1e-10;  % diagonal load
 k = 2;
 delta   = 0.5/numberOfPulses^k; % (or 1/numberOfPulses^2)
@@ -39,8 +40,9 @@ L = chol(toeplitzMatrix,'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
-numberOfEtaValues = 500;
-etaValues = [linspace(0.1,100, numberOfEtaValues*0.1),linspace(100, 100000, numberOfEtaValues*0.9)];
+numberOfEtaValues = 1000;
+etaValues = [linspace(0.1, 100, numberOfEtaValues*0.3),linspace(100, 10000, numberOfEtaValues*0.7)];
+
 
 % ------- Distributions ------------
 clutterDistribution  = 'CN';  % 'K' or 'CN'
@@ -67,63 +69,82 @@ end
 
 %% ======================= Simulation ==================================
 tic
-sumFA = zeros(1, numberOfEtaValues); 
-sumTD = zeros(1, numberOfEtaValues);
+
+sumFA = zeros(length(SIRs), numberOfEtaValues); 
+sumTD = zeros(length(SIRs), numberOfEtaValues);
 signalRow = numberOfDistances-1;
 
-for i=1:sampleSize
-% Sampling
-    CPI = Sampling(numberOfPulses, numberOfDistances, rMax, sigma, L, F)';
+for iSIR = 1:length(SIRs)
+    iSIR
     
-    CUTWithoutSignal = CPI(signalRow,:);
-    CUTWithSignal = CUTWithoutSignal + signal';
-    CPIWithoutSignal = CPI;
-    CPIWithoutSignal(signalRow,:) = [];
-    
-    covarianceEstimate = 1/(numberOfDistances-1)*(CPIWithoutSignal')*CPIWithoutSignal;
-    covarianceEstimate = real(covarianceEstimate);
-    covarianceEstimateInverse = inv(covarianceEstimate);
-    
-    steeringVectorNorm = steeringVector'*covarianceEstimateInverse*steeringVector;
-    
-    % pFA
-    q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal',covarianceEstimateInverse)); 
-    q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutSignal',covarianceEstimateInverse,...
-                                            steeringVector, steeringVectorNorm);
-    LR_FA = h_n(q1_H0)./h_n(q0_H0);
-    
-    % pTD
-    q0_H1 = real(MultidimensionalNorm(CUTWithSignal',covarianceEstimateInverse)); 
-    q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithSignal',covarianceEstimateInverse,...
-                                            steeringVector, steeringVectorNorm);
-    
-    LR_TD = h_n(q1_H1)./h_n(q0_H1);
+    SIR = 10^(SIRs(iSIR)/10);           
+    alpha = sigma*sqrt(SIR);
+    signalActual = alpha*steeringVectorActual;
 
-    for iEta = 1:numberOfEtaValues
+
+    for iSample=1:sampleSize
+        % Sampling
+        CPI = Sampling(numberOfPulses, numberOfDistances, rMax, sigma, L, F)';
+        
+        CUTWithoutSignal = CPI(signalRow,:)';
+        CUTWithActualSignal = CUTWithoutSignal + signalActual;
+        CPIWithoutSignal = CPI;
+        CPIWithoutSignal(signalRow,:) = [];
+        
+        covarianceEstimate = 1/(numberOfDistances-1)*(CPIWithoutSignal')*CPIWithoutSignal; 
+        covarianceEstimate = real(covarianceEstimate);
+        covarianceEstimateInverse = inv(covarianceEstimate + epsilon*eye(numberOfPulses));
+        % Include CUT in covariance estimate? 
+        
+        %covarianceEstimateInverse = toeplitzMatrixInverse;
+
+        LR_FA = zeros(1,numberOfOmegas);
+        LR_TD = zeros(1,numberOfOmegas);
+
+        for iOmegaD = 1:numberOfOmegas
+        
+            steeringVectorTest = (exp( 1i*testOmegaDs(iOmegaD)*(0:numberOfPulses - 1) )/sqrt(numberOfPulses))';
+            steeringVectorNorm = steeringVectorTest'*covarianceEstimateInverse*steeringVectorTest;
+            
+            % pFA
+            q0_H0 = real(MultidimensionalNorm(CUTWithoutSignal,covarianceEstimateInverse)); 
+            q1_H0 = CalculateQ1WithEstimatedAlpha(CUTWithoutSignal,covarianceEstimateInverse,...
+                                                    steeringVectorTest, steeringVectorNorm);
+            LR_FA(iOmegaD) = h_n(q1_H0)./h_n(q0_H0);
+            
+            % pTD
+            q0_H1 = real(MultidimensionalNorm(CUTWithActualSignal,covarianceEstimateInverse)); 
+            q1_H1 = CalculateQ1WithEstimatedAlpha(CUTWithActualSignal,covarianceEstimateInverse,...
+                                                    steeringVectorTest, steeringVectorNorm);
+            LR_TD(iOmegaD) = h_n(q1_H1)./h_n(q0_H1);
+        end
     
-        eta = etaValues(iEta);
-    
-        sumFA(iEta) = sumFA(iEta) + sum((LR_FA>eta));
-        sumTD(iEta) = sumTD(iEta) + sum((LR_TD>eta));
+        % Sort out the max likely omegas 
+        maxLR_FA = max(LR_FA);
+        maxLR_TD = max(LR_TD);
+        
+        sumFA(iSIR,:) = sumFA(iSIR,:) + (maxLR_FA>etaValues);
+        sumTD(iSIR,:) = sumTD(iSIR,:) + (maxLR_TD>etaValues);
+   
     end
 end
+
 pFalseAlarm = sumFA/sampleSize;
-pDetection = sumTD/sampleSize;
+pDetection  = sumTD/sampleSize;
+
 
 toc
 
 %% ============================ Plotting =====================
 hold on
-%for iSIR = 1:length(SIRs)
-%    plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
-%end
-plot(pFalseAlarm, pDetection, ':',LineWidth = 1.5)
-plot([0,1],[0,1],'k:')
-%set(gca, 'XScale', 'log');
-xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 10', location = 'best')
-%legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'southeast')
-%axis([1e-7, 1, 0, 1])
+for iSIR = 1:length(SIRs)
+    plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
+end
+%plot([0,1],[0,1])
+set(gca, 'XScale', 'log');
+xlabel('P_{FA}', FontSize=15), ylabel('P_{TD}',FontSize=15)
+legend('SIR = 0', 'SIR = 1', 'SIR = 3', 'SIR = 5', location = 'southeast',FontSize=15)
+axis([1e-7, 1, 0, 1])
 
 
 
