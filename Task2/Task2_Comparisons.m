@@ -177,7 +177,7 @@ plot(pFalseAlarmActual, pDetectionActual,'-.', LineWidth=1.5)
 %plot([0,1],[0,1],'k:')
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('Unknowns', 'Unknown alpha', 'All known', location = 'best')
+legend('Unknowns', 'Unknown alpha', 'All known', location = 'best',FontSize=12)
 axis([1e-7, 1, 0, 1])
 
 
