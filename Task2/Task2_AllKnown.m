@@ -20,12 +20,12 @@ numberOfDistances = 1;  % 100
 omegaD = 0.01;
 steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) ))';
 
-SIRs = [0, 1, 3, 5]; % dB 
+SIRs = [0, 3, 5, 7]; % dB 
 
 % ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
 epsilon = 1e-10;  % diagonal load
 k = 2;
-delta   = 0.5/numberOfPulses^k; % (or 1/numberOfPulses^2)
+delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 L = chol(toeplitzMatrix, 'lower');
@@ -106,7 +106,7 @@ end
 %plot([0,1],[0,1])
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}', FontSize=15), ylabel('P_{TD}',FontSize=15)
-legend('SIR = 0', 'SIR = 1', 'SIR = 3', 'SIR = 5', location = 'southeast',FontSize=15)
+legend('SIR = 0', 'SIR = 3', 'SIR = 5', 'SIR = 7', location = 'southeast',FontSize=15)
 axis([1e-7, 1, 0, 1])
 
 

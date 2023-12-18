@@ -17,16 +17,16 @@ numberOfPulses    = 128; % 128
 numberOfDistances = 100;  % 100
 
 % --------- Signal ----------- 
-SIRs = [0, 1, 3, 5]; % dB 
+SIRs = [0, 3, 5, 7]; % dB 
 
 % Actual signal
 omegaDActual  = 0.01;
 steeringVectorActual = (exp( 1i*omegaDActual*(0:numberOfPulses - 1)))';
 
 % Test signals 
-numberOfOmegas = 100;
-minOmegaD = 0.005;
-maxOmegaD = 0.05;
+numberOfOmegas = 101;
+minOmegaD = 0.0;
+maxOmegaD = 0.1;
 testOmegaDs  = linspace(minOmegaD, maxOmegaD, numberOfOmegas);
 
 % ------- Covariance ----------------
@@ -143,7 +143,7 @@ end
 %plot([0,1],[0,1])
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}', FontSize=15), ylabel('P_{TD}',FontSize=15)
-legend('SIR = 0', 'SIR = 1', 'SIR = 3', 'SIR = 5', location = 'southeast',FontSize=15)
+legend('SIR = 0', 'SIR = 3', 'SIR = 5', 'SIR = 7', location = 'southeast',FontSize=15)
 axis([1e-7, 1, 0, 1])
 
 

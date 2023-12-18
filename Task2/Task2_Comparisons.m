@@ -27,9 +27,9 @@ steeringVectorActual = (exp( 1i*omegaDActual*(0:numberOfPulses - 1)))';
 signalActual = alpha*steeringVectorActual;
 
 % Test signals 
-numberOfOmegas = 100;
-minOmegaD = 0.005;
-maxOmegaD = 0.05;
+numberOfOmegas = 101;
+minOmegaD = 0.0;
+maxOmegaD = 0.1;
 testOmegaDs  = linspace(minOmegaD, maxOmegaD, numberOfOmegas);
 
 % ------- Covariance ----------------
