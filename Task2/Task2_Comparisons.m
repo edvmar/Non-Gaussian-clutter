@@ -35,7 +35,7 @@ testOmegaDs  = linspace(minOmegaD, maxOmegaD, numberOfOmegas);
 % ------- Covariance ----------------
 epsilon = 1e-10;  % diagonal load
 k = 2;
-delta   = 0.5/numberOfPulses^k; % (or 1/numberOfPulses^2)
+delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 %toeplitzMatrix = eye(numberOfPulses);
