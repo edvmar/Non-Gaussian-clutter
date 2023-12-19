@@ -9,7 +9,7 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4;
+sampleSize = 1e4; % 2*1e6
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -178,7 +178,7 @@ plot(hejPFA, hejPTD, LineWidth=1.5)
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
 legend( 'All known', 'Unknown \alpha','Unknown \alpha, \omega','Unknown \alpha, \omega, \Sigma', location = 'best',FontSize=14)
-axis([1e-7, 1, 0, 1])
+axis([1e-6, 1, 0, 1])
 
 
 

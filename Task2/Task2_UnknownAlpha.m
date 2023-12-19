@@ -9,7 +9,7 @@ clc, clear, close all
 
 % ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4;
+sampleSize = 1e4; % 2*1e6
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
@@ -111,7 +111,7 @@ end
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}', FontSize=15), ylabel('P_{TD}',FontSize=15)
 legend('SIR = 0', 'SIR = 3', 'SIR = 5', 'SIR = 7', location = 'southeast',FontSize=15)
-axis([1e-7, 1, 0, 1])
+axis([1e-6, 1, 0, 1])
 
 
 
