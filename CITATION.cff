@@ -1,0 +1,20 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: Non-Gaussian-clutter
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Edvin
+    family-names: Martinson
+    affiliation: Chalmers University of Technology
+  - given-names: Erik
+    family-names: Sahlin
+    affiliation: Chalmers University of Technology
+  - given-names: Samuel
+    family-names: Winqvist
+    affiliation: Chalmers University of Technology
+repository-code: 'https://github.com/edvmar/Non-Gaussian-clutter'
