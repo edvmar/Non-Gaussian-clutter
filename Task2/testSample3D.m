@@ -9,7 +9,7 @@ sigma = 1;
 rMax  = 3.3*sigma; % kanske större för Kdist? 
 
 numberOfPulses    = 6; % 128
-numberOfDistances = 5;  % 100
+numberOfDistances = 5; % 100
 
 % --------- Signal ----------- 
 SIRs = [0, 1, 3, 5]; % dB 
@@ -80,14 +80,48 @@ uniformSample = rand(numberOfPulses, numberOfDistances, sampleSize);
 rangeDifference = rangeMatrix-uniformSample;
 rangeDifference = permute(rangeDifference, [4, 1, 2, 3]); % to get correct dimensions for the min operation
 
-[~, index] = min(abs(rangeDifference));
+[test, index] = min(abs(rangeDifference));
 radius = domain(index);
 radius = squeeze(radius); % removes the redundant first dimension of radius
 
-thetas = rand(1,numberOfDistances)*2*pi;
-xSample = exp(thetas*1i).*radius; 
+thetas  = rand(numberOfPulses, numberOfDistances, sampleSize)*2*pi;
+xSample = exp(thetas*1i).*radius;
 
-CPIsamples_test = pagemtimes(L,xSample); % pagewise matrix multiplication
-                                         % each page corresponds to a CPI
-                                         % matrix sample
+CPIsamples = pagemtimes(L,xSample); % pagewise matrix multiplication
+                                    % each page corresponds to a CPI
+                                    % matrix sample
+                                    % OBS! The CPI matrices are the
+                                    % transponate of the definition (in the
+                                    % other codes we take the transponate
+                                    % after the sampling function in the code)
 
+
+
+
+
+
+
+%%
+% Table for cdf x,y values
+domain = linspace(0, rMax, rMax*100); % Byt till inget rMax beroende?
+range = F(domain)';
+range_rep = repmat(range,1,sampleSize)';
+
+uniformSample = uniformSample(:,1,:); %rand(numberOfPulses, sampleSize);
+uniformSample = squeeze(uniformSample);
+xSample2 = zeros(numberOfPulses, sampleSize);
+
+
+% Sample x
+for j = 1:numberOfPulses
+    uniform = uniformSample(j,:)';
+    [~, index2] = min(abs((range_rep-uniform)'));
+    radius2 = domain(index2);
+    
+    thetas2 = thetas(1,1,:);
+    thetas2 = squeeze(thetas2)';
+    xSample2(j,:) = exp(thetas2*1i).*radius2; 
+end
+
+% d_k = L x
+rangeBin = (L*xSample2);

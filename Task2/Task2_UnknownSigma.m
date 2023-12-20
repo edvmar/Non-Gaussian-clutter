@@ -9,12 +9,12 @@ clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4;
+sampleSize = 4;
 sigma = 1;
 rMax  = 10*sigma; % kanske större för Kdist? 
 
-numberOfPulses    = 128; % 128
-numberOfDistances = 100;  % 100
+numberOfPulses    = 6; % 128
+numberOfDistances = 5;  % 100
 
 % --------- Signal ----------- 
 SIRs = [0, 1, 3, 5]; % dB 
@@ -97,7 +97,7 @@ for iSIR = 1:length(SIRs)
         % Include CUT in covariance estimate? 
         
         %covarianceEstimateInverse = toeplitzMatrixInverse;
-
+        
         LR_FA = zeros(1,numberOfOmegas);
         LR_TD = zeros(1,numberOfOmegas);
 
