@@ -18,4 +18,9 @@ authors:
     family-names: Winqvist
     affiliation: Chalmers University of Technology
 repository-code: 'https://github.com/edvmar/Non-Gaussian-clutter'
-year: 2023
+abstract: >-
+  Repository for project in the course MVE385 at Chalmers in
+  collaboration with SAAB. The project investigates the
+  performance of different detector models on different
+  types of clutter. 
+date-released: '2023-12-31'
