@@ -44,7 +44,8 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 1000;
-etaValues = [linspace(0.1, 100, numberOfEtaValues*0.3),linspace(100, 10000, numberOfEtaValues*0.7)];
+etaValues = [linspace(0.01, 1, numberOfEtaValues*0.1),linspace(1, 1e3, numberOfEtaValues*0.75),...
+             linspace(2e3, 1e5, numberOfEtaValues*0.1),linspace(1e5, 1e7, numberOfEtaValues*0.05)];
 
 
 % ------- Distributions ------------
@@ -166,7 +167,17 @@ pDetectionActual  = sumTD_Actual/sampleSize;
 
 toc
 
+
+%% Using stored data 
+% 
+% load('pActual.mat')
+% load('pUnknownAlpha.mat')
+% load('pUnknownAlphaOmega.mat')
+% load('pUnknownSigma.mat')
+
+
 %% ============================ Plotting =====================
+
 load('Hej.mat')
 figure(1)
 hold on
