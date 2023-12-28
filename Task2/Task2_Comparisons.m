@@ -1,9 +1,10 @@
-%%%%%%%%%%%%%% Task2 omega unknown %%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Task2 Comparisons %%%%%%%%%%%%%%%%%
 %
-% Produces ROC curves for the 1D case where both 
-% signal and clutter are known
+% Produces ROC-curves to compare the 4 cases 
+% for a single SIR value. 
+% NOTE: Use final section to run with stored data
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc, clear, close all
 
@@ -168,14 +169,6 @@ pDetectionActual  = sumTD_Actual/sampleSize;
 toc
 
 
-%% Using stored data 
-% 
-% load('pActual.mat')
-% load('pUnknownAlpha.mat')
-% load('pUnknownAlphaOmega.mat')
-% load('pUnknownSigma.mat')
-
-
 %% ============================ Plotting =====================
 
 load('Hej.mat')
@@ -193,7 +186,25 @@ axis([1e-6, 1, 0, 1])
 
 
 
+%% ==================== Using stored data =============================
 
+models = "_CNCN";  % _CNCN, _CNK, _KK 
+iSIR = 2;          % SIRs = [0, 3, 5, 7]; dB 
+
+pActual            = load(strcat("Z:\Non-Gaussian-clutter-main\Allknown\Probabilities_Allknown_2e6",models,".mat"));
+pUnknownAlpha      = load(strcat("Z:\Non-Gaussian-clutter-main\UnknownAlpha\Probabilities_UnknownAlpha_2e6",models,".mat"));
+pUnknownAlphaOmega = load(strcat("Z:\Non-Gaussian-clutter-main\UnknownAlphaOmega\Probabilities_UnknownAlphaOmega_2e6",models,".mat"));
+%pAllUnknown        = load(strcat("dir/filename",models,".mat"));
+
+hold on
+plot(pActual.pFalseAlarm(iSIR,:), pActual.pDetection(iSIR,:), LineWidth=1.5)
+plot(pUnknownAlpha.pFalseAlarm(iSIR,:), pUnknownAlpha.pDetection(iSIR,:), LineWidth=1.5)
+plot(pUnknownAlphaOmega.pFalseAlarm(iSIR,:), pUnknownAlphaOmega.pDetection(iSIR,:), LineWidth=1.5)
+%plot(pAllUnknown.pFalseAlarm(iSIR,:), pAllUnknown.pDetection(iSIR,:), LineWidth=1.5)
+set(gca, 'XScale', 'log');
+xlabel('P_{FA}'), ylabel('P_{TD}')
+legend( 'All known', 'Unknown \alpha','Unknown \alpha, \omega','Unknown \alpha, \omega, \Sigma', location = 'best',FontSize=14)
+axis([1e-6, 1, 0, 1])
 
 
 
