@@ -41,8 +41,9 @@ toeplitzMatrixInverse = inv(toeplitzMatrix);
 
 % -----  Threshold values ------
 numberOfEtaValues = 1000;
-etaValues = [linspace(1, 100, numberOfEtaValues*0.1),linspace(110, 1e4, numberOfEtaValues*0.5),...
-             linspace(2e4, 1e7, numberOfEtaValues*0.2),linspace(1e7, 1e10, numberOfEtaValues*0.2)];
+etaValues = [linspace(1, 100, numberOfEtaValues*0.1),linspace(110, 1e4, numberOfEtaValues*0.4),...
+             linspace(2e4, 1e7, numberOfEtaValues*0.3),linspace(1e7, 1e10, numberOfEtaValues*0.1),...
+             linspace(1e10, 1e13, numberOfEtaValues*0.1)];
 
 
 % ------- Distributions ------------
