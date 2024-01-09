@@ -1,3 +1,9 @@
+%%%%%%%%%%%%% Tail Distribution Testing %%%%%%%%%%%%%%%%%
+%
+% Testing the implementation of the Tail Distributions
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clc
 clear
 

@@ -1,9 +1,10 @@
-%%%%%%%%%%%%%% Task2 Sigma Unknown %%%%%%%%%%%%%%
+%%%%%%%%%%%%%% TEST Task2 Sigma Unknown %%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Produces ROC curves for the 1D case where both 
-% signal and clutter are known
+% signal and clutter are unknown
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NOTE: This script tests the vectorized version. This is a Test script.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc, clear, close all
 

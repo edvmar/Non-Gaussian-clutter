@@ -1,6 +1,6 @@
 %%%%%%%%%%%%% Sample Testing %%%%%%%%%%%%%%%%%
 %
-% Trying to implement the sampling with functions
+% Testing the implementation of the sampling
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
@@ -39,13 +39,13 @@ figure(2)
 subplot(1,2,1)
 plot(real(sample1), imag(sample1), 'bo')
 axis equal
-%rMax=2*rMax;
 axis([-rMax rMax -rMax rMax])
+
 subplot(1,2,2)
 plot(real(sample2), imag(sample2), 'ro')
 axis equal
 axis([-rMax rMax -rMax rMax])
-%
+
 x = linspace(-rMax,rMax);
 sigma1D = sigma/sqrt(2);
 f = @(x) 1/(sqrt(2*pi*sigma1D^2))*exp(-x.^2/(2*sigma1D^2));

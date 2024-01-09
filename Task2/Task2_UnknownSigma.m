@@ -1,20 +1,22 @@
-%%%%%%%%%%%%%% Task2 Sigma Unknown %%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Task2 Sigma Unknown %%%%%%%%%%%%%%%%%%%%%%%%%
 %
 % Produces ROC curves for the 1D case where both 
-% signal and clutter are known
+% signal and clutter are unknown
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% NOTE: Not able to vectorize over samples due to lack of RAM. 
+%       For vectorized implementation, see ./VectorizationTesting
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc, clear, close all
 
 %% ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4; %2*1e6
+sampleSize = 2*1e6;
 sigma = 1;
-rMax  = 10*sigma; % kanske större för Kdist? 
+rMax  = 10*sigma;
 
-numberOfPulses    = 128; % 128
-numberOfDistances = 100;  % 100
+numberOfPulses    = 128; 
+numberOfDistances = 100; 
 
 % --------- Signal ----------- 
 SIRs = [0, 3, 5, 7]; % dB 
@@ -31,11 +33,9 @@ testOmegaDs  = linspace(minOmegaD, maxOmegaD, numberOfOmegas);
 
 % ------- Covariance ----------------
 epsilon = 1e-10;  % diagonal load
-k = 2;
-delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
+delta   = 1/numberOfPulses^2;
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
-%toeplitzMatrix = eye(numberOfPulses);
 L = chol(toeplitzMatrix,'lower');
 toeplitzMatrixInverse = inv(toeplitzMatrix);
 
@@ -53,17 +53,17 @@ nu = 1;
 
 
 if isequal(clutterDistribution,'CN')
-    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma); % eqn (12
+    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma); % CDF
 elseif isequal(clutterDistribution,'K')
-    F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu); % eqn (12)
+    F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu); 
 else 
     error('Unknown clutter distribution');
 end
 
 if isequal(detectorDistribution,'CN')
-    h_n = @(x) H_nGaussian(x, numberOfPulses, sigma); % eqn (12
+    h_n = @(x) H_nGaussian(x, numberOfPulses, sigma); % TailDistribution
 elseif isequal(detectorDistribution,'K')
-    h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu); % eqn (12)
+    h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu); 
 else 
     error('Unknown detector distribution');
 end
@@ -85,7 +85,7 @@ for iSIR = 1:length(SIRs)
 
 
     for iSample=1:sampleSize
-        % Sampling
+
         CPI = Sampling(numberOfPulses, numberOfDistances, rMax, sigma, L, F)';
         
         CUTWithoutSignal = CPI(signalRow,:)';
@@ -96,9 +96,6 @@ for iSIR = 1:length(SIRs)
         covarianceEstimate = 1/(numberOfDistances-1)*(CPIWithoutSignal')*CPIWithoutSignal; 
         covarianceEstimate = real(covarianceEstimate);
         covarianceEstimateInverse = inv(covarianceEstimate + epsilon*eye(numberOfPulses));
-        % Include CUT in covariance estimate? 
-        
-        %covarianceEstimateInverse = toeplitzMatrixInverse;
 
         LR_FA = zeros(1,numberOfOmegas);
         LR_TD = zeros(1,numberOfOmegas);
@@ -142,7 +139,6 @@ hold on
 for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
-%plot([0,1],[0,1])
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}', FontSize=15), ylabel('P_{TD}',FontSize=15)
 legend('SIR = 0', 'SIR = 3', 'SIR = 5', 'SIR = 7', location = 'southeast',FontSize=15)
