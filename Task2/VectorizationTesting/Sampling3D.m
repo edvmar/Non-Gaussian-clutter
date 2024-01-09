@@ -1,15 +1,16 @@
-%%%%%%%%%%%%%% SampleComplexGaussionRow %%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Sampling %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Numerically samples a CPI matrices from CN(0,sigma^2)
-% rMax is the largest radii that we calculate the inverse for
-% Calculate the inverse numerically and choose closest value
+% Samples a row/rangebin of the CPI using the numerical inverse
+% of the CDF (F).
+% rMax is the largest radii that we calculate the inverse for.
+% L is the Cholesky decomposition of the covariance matrix.
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function sampleCPI = Sampling3D(numberOfPulses, numberOfDistances, sampleSize, rMax, L, F)
     
     % Table for cdf x,y values
-    domain = linspace(0, rMax, 7); % Byt till inget rMax beroende?
+    domain = linspace(0, rMax, 7);
     range = F(domain)';
     rangeMatrix = repmat(range, 1, numberOfPulses, numberOfDistances, sampleSize);
     rangeMatrix = permute(rangeMatrix, [2 3 4 1]); % to get correct dimensions to calc rangeDifference

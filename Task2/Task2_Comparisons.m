@@ -1,9 +1,9 @@
-%%%%%%%%%%%%%% Task2 omega unknown %%%%%%%%%%%%%%
+%%%%%%%%%%%%%% Task2 Comparisons %%%%%%%%%%%%%%%%%%%%
 %
-% Produces ROC curves for the 1D case where both 
-% signal and clutter are known
+% Compares the performance between the different cases of unknowns
+% NOTE: Use stored data!
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 clc, clear, close all
 

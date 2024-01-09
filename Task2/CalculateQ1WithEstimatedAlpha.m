@@ -1,6 +1,6 @@
 %%%%%%%%%%%% Calculate q1 with ML estimate of alpha %%%%%%%%%%%%%
 %
-% Calculates q1 by (7.34) in Modern Radar 
+% Calculates q1 by eq (7.34) in Modern Radar Detection by Greco/de Maio
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

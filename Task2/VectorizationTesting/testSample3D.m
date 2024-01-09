@@ -6,7 +6,7 @@ clc
 % --------- Simulation ---------
 sampleSize = 4;
 sigma = 1;
-rMax  = 3.3*sigma; % kanske större för Kdist? 
+rMax  = 3.3*sigma;
 
 numberOfPulses    = 6; % 128
 numberOfDistances = 5; % 100
@@ -70,7 +70,7 @@ sumTD = zeros(length(SIRs), numberOfEtaValues);
 signalRow = numberOfDistances-1;
 
 % Table for cdf x,y values
-domain = linspace(0, rMax, 7); % Byt till inget rMax beroende?
+domain = linspace(0, rMax, 7);
 range = F(domain)';
 rangeMatrix = repmat(range, 1, numberOfPulses, numberOfDistances, sampleSize);
 rangeMatrix = permute(rangeMatrix, [2 3 4 1]); % to get correct dimensions to calc rangeDifference

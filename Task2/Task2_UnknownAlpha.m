@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%% Task2 UnkownAlpha %%%%%%%%%%%%%%
 %
-% Produces ROC curves for the 1D case where both 
-% signal and clutter are known unkown alpha
+% Produces ROC curves for the 1D case where clutter is known
+% but the signal strength alpha is unknown
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -9,12 +9,12 @@ clc, clear, close all
 
 % ================== Parameters ========================
 % --------- Simulation ---------
-sampleSize = 1e4; % 2*1e6
+sampleSize = 2*1e6;
 sigma = 1;
-rMax  = 10*sigma; % kanske större för Kdist? 
+rMax  = 10*sigma; 
 
-numberOfPulses    = 128; % 128
-numberOfDistances = 1;  % 100
+numberOfPulses    = 128; 
+numberOfDistances = 1;  % Only need one CUT
 
 % --------- Signal ----------- 
 omegaD = 0.01;
@@ -23,10 +23,9 @@ steeringVector = (exp( 1i*omegaD*(0:numberOfPulses - 1) ))';
 SIRs = [0, 3, 5, 7]; % dB 
 
 
-% ------- Covariance -------- ||| TODO: Seems to be something wrong with Toeplitz. 
+% ------- Covariance -------- 
 epsilon = 1e-10;  % diagonal load
-k = 2;
-delta   = 1/numberOfPulses^k; % (or 1/numberOfPulses^2)
+delta   = 1/numberOfPulses^2;
 
 toeplitzMatrix = CalculateToeplitzMatrix(numberOfPulses, delta)+ epsilon*eye(numberOfPulses);
 L = chol(toeplitzMatrix, 'lower');
@@ -45,25 +44,25 @@ nu = 1;
 
 
 if isequal(clutterDistribution,'CN')
-    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma); % eqn (12
+    F = @(x) 1 - H_nGaussian(abs(x).^2, 0, sigma); % CDF
 elseif isequal(clutterDistribution,'K')
-    F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu); % eqn (12)
+    F = @(x) 1 - H_nKdist(abs(x).^2, 0, sigma, nu); 
 else 
     error('Unknown clutter distribution');
 end
 
 if isequal(detectorDistribution,'CN')
-    h_n = @(x) H_nGaussian(x, numberOfPulses, sigma); % eqn (12
+    h_n = @(x) H_nGaussian(x, numberOfPulses, sigma); % TailDistribution
 elseif isequal(detectorDistribution,'K')
-    h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu); % eqn (12)
+    h_n = @(x) H_nKdist(x, numberOfPulses, sigma, nu);
 else 
     error('Unknown detector distribution');
 end
 
-steeringVectorNorm = steeringVector'*toeplitzMatrixInverse*steeringVector;
-
 %% ======================= Simulation ==================================
 tic
+
+steeringVectorNorm = steeringVector'*toeplitzMatrixInverse*steeringVector;
 
 sumFA = zeros(length(SIRs), numberOfEtaValues);
 sumTD = zeros(length(SIRs), numberOfEtaValues);
@@ -109,7 +108,6 @@ hold on
 for iSIR = 1:length(SIRs)
     plot(pFalseAlarm(iSIR,:), pDetection(iSIR, :), LineWidth=1.5)
 end
-%plot([0,1],[0,1],'k--')
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}', FontSize=15), ylabel('P_{TD}',FontSize=15)
 legend('SIR = 0', 'SIR = 3', 'SIR = 5', 'SIR = 7', location = 'southeast',FontSize=15)
