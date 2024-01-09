@@ -1,6 +1,6 @@
-%%%%%%%%%%%%%% ComplexGaussianPDG %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%% ComplexGaussianPDF %%%%%%%%%%%%%%%%
 %
-% Returns pdf values for Complex Gauss distribution
+% Returns pdf values for Complex Gaussian distribution
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 

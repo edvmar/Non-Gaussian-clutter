@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%% Task 1 b %%%%%%%%%%%%%%%%%%%%
 %
 % Produces ROC curves for the 0D - problem 
-% Gaussian detector and Compound clutter
+% CN detector and CG clutter
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
@@ -31,15 +31,13 @@ etaValues = {[linspace(0.5, 100, numberOfEtaValues*0.8),linspace(100, 1e4, numbe
              last}; 
 
 
-sampleSize = 10^4; % 10^8 later? 
+sampleSize = 10^8;
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
 detectorMean = 0;
 clutterMean = 0;
 
-% pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
-% pDetection = zeros(length(SIRs), numberOfEtaValues);
 sumFA = zeros(length(SIRs), numberOfEtaValues);
 sumTD = zeros(length(SIRs), numberOfEtaValues);
 iter = 0;
@@ -49,7 +47,7 @@ for iSIR = 1:length(SIRs)
     SIR = 10^(SIRs(iSIR)/10);           
     alpha = clutterSigma*sqrt(SIR);             
    
-    theta = 0; % change to rand(1,1)*2*pi ? 
+    theta = 0;
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
     clutterSample = SampleCompoundGaussian(sampleSize, clutterMean, clutterSigma); 
@@ -61,7 +59,7 @@ for iSIR = 1:length(SIRs)
     LRT_fa = fH1_fa./fH0_fa;
 
     % True Detection (**)
-    fH1_td = ComplexGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH1_td = ComplexGaussianPDF(signalSample, detectorMean + s, detectorSigma);  
     fH0_td = ComplexGaussianPDF(signalSample, detectorMean, detectorSigma);
     LRT_td = fH1_td./fH0_td;
 
@@ -90,7 +88,7 @@ for iSIR = 1:length(SIRs)
 end
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west')
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west', FontSize=14)
 axis([1e-7, 1, 0, 1])
  
 

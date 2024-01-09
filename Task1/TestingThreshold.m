@@ -1,29 +1,23 @@
+%%%%%%%%%%%%%%%%%%% Testing Threshold %%%%%%%%%%%%%%%%%%%%
+%
+% Verifies that the numerical and analytical 
+% thresholds coincide in the CN-CN case. 
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 clear
 clc
 
-sampleSize = 1e8;
+sampleSize = 1e7;
 sample = SampleComplexGaussian(sampleSize, 0, 1);
 
 SIR = 13;
-SIR = 10^(SIR/10);           % potentially like this ? 
+SIR = 10^(SIR/10);  
 alpha = sqrt(SIR);             
    
 theta = 0; 
 s = alpha*(cos(theta)+1i*sin(theta)); % signal 
-
-% [d,index] = min(abs(sample-s));
-% [D,Index] = max(abs(sample-s));
-% 
-% x = sample(index)
-% X = sample(Index)
-% 
-% fH0 = ComplexGaussianPDF(x,0,1);
-% fH1 = ComplexGaussianPDF(x,s,1);
-% LRTmin = fH1/fH0
-% 
-% FH0 = ComplexGaussianPDF(X,0,1);
-% FH1 = ComplexGaussianPDF(X,s,1);
-% LRTmax = FH1/FH0
 
 
 eta = 4*1e5;

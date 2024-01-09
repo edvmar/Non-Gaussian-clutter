@@ -1,12 +1,11 @@
-%%%%%%%%%%%%%%%%%%% Task 1 a %%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Task 1 a %%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% Produces ROC curves for the 0D - problem 
-% Gaussian detector and Gaussian clutter
+% Produces ROC curves for the 0D - problem in the case 
+% CN detector and CN clutter 
 %
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
 clc
-
 
 SIRs = [0, 3, 10, 13]; % dB 
 
@@ -18,37 +17,35 @@ etaValues = {linspace(0.5, 800, numberOfEtaValues),...
              [linspace(0.5, 500, numberOfEtaValues*0.5),linspace(500, maxEta, numberOfEtaValues*0.5)]}; 
 
 
-sampleSize = 10^4; % 10^8 later? 
+sampleSize = 1e8;
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
 detectorMean = 0;
 clutterMean = 0;
 
-% pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
-% pDetection = zeros(length(SIRs), numberOfEtaValues);
 sumFA = zeros(length(SIRs), numberOfEtaValues);
 sumTD = zeros(length(SIRs), numberOfEtaValues);
 
 tic
 for iSIR = 1:length(SIRs)
-    
+    iSIR
     SIR = 10^(SIRs(iSIR)/10);           
     alpha = clutterSigma*sqrt(SIR);             
    
-    theta = 0; % change to rand(1,1)*2*pi ? 
+    theta = 0; 
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
     clutterSample = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); 
     signalSample = clutterSample + s;
 
     % False Alarm (*)
-    fH1_fa = ComplexGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH1_fa = ComplexGaussianPDF(clutterSample, detectorMean + s, detectorSigma);          
     fH0_fa = ComplexGaussianPDF(clutterSample, detectorMean, detectorSigma);
     LRT_fa = fH1_fa./fH0_fa;
 
     % True Detection (**)
-    fH1_td = ComplexGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH1_td = ComplexGaussianPDF(signalSample, detectorMean + s, detectorSigma);          
     fH0_td = ComplexGaussianPDF(signalSample, detectorMean, detectorSigma);
     LRT_td = fH1_td./fH0_td;
 
@@ -57,16 +54,10 @@ for iSIR = 1:length(SIRs)
 
         % False Alarm (*)
         sumFA(iSIR, iEta) = sum((LRT_fa > eta));
-        % sumFA = sum(((fH1_fa./fH0_fa) > eta));
         
         % True Detection (**)
         sumTD(iSIR, iEta) = sum((LRT_td > eta));
-        %sumTD = sum(((fH1_td./fH0_td) > eta));
 
-
-        % pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
-        % pDetection(iSIR, iEta) = sumTD/sampleSize;
-        iEta
     end
 end 
 toc
@@ -82,7 +73,7 @@ for iSIR = 1:length(SIRs)
 end
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'southeast')
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'southeast', FontSize=14)
 axis([1e-7, 1, 0, 1])
  
 

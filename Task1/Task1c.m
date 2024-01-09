@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%% Task 1 c %%%%%%%%%%%%%%%%%%%%
 %
 % Produces ROC curves for the 0D - problem 
-% Compound detector and Gaussian clutter
+% CG detector and CN clutter
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
@@ -18,7 +18,7 @@ etaValues = {linspace(0.5, 500, numberOfEtaValues),...
              [linspace(0.5, 200, numberOfEtaValues*0.3),linspace(200, maxEta, numberOfEtaValues*0.7)]}; 
 
 
-sampleSize = 10^4; % 10^8 later? 
+sampleSize = 10^8;
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma = 1; % The standard deviation for the detector
@@ -30,23 +30,23 @@ sumTD = zeros(length(SIRs), numberOfEtaValues);
 
 tic
 for iSIR = 1:length(SIRs)
-    
+    iSIR
     SIR = 10^(SIRs(iSIR)/10);           
     alpha = clutterSigma*sqrt(SIR);             
    
-    theta = 0; % change to rand(1,1)*2*pi ? 
+    theta = 0;
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
     clutterSample = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); 
     signalSample = clutterSample + s;
 
     % False Alarm (*)
-    fH1_fa = CompoundGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH1_fa = CompoundGaussianPDF(clutterSample, detectorMean + s, detectorSigma);      
     fH0_fa = CompoundGaussianPDF(clutterSample, detectorMean, detectorSigma);
     LRT_fa = fH1_fa./fH0_fa;
 
     % True Detection (**)
-    fH1_td = CompoundGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH1_td = CompoundGaussianPDF(signalSample, detectorMean + s, detectorSigma);   
     fH0_td = CompoundGaussianPDF(signalSample, detectorMean, detectorSigma);
     LRT_td = fH1_td./fH0_td;
 
@@ -59,7 +59,6 @@ for iSIR = 1:length(SIRs)
         % True Detection (**)
         sumTD(iSIR, iEta) = sum((LRT_td > eta));
 
-        iEta
     end
 end 
 toc
@@ -75,7 +74,7 @@ for iSIR = 1:length(SIRs)
 end
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west')
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west', FontSize=14)
 axis([1e-7, 1, 0, 1])
  
 

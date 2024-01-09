@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%% Task 1 a Numerical and Analytical %%%%%%%%%%
 %
-% Numerical and analytical ROC curves for the CN CN case
+% Numerical and analytical ROC curves for the CN-CN case
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 clear
@@ -30,12 +30,11 @@ pFalseAlarmNumerical = zeros(length(SIRs), numberOfEtaValues);
 pDetectionNumerical = zeros(length(SIRs), numberOfEtaValues);
 
 for iSIR = 1:length(SIRs)
-    % SIR = SIRs(iSIR); 
-    % alpha = clutterSigma*sqrt(SIR);    % signal strength  dunno if this is correct?
-    SIR = 10^(SIRs(iSIR)/10);           % potentially like this ? 
+    
+    SIR = 10^(SIRs(iSIR)/10);      
     alpha = clutterSigma*sqrt(SIR);             
 
-    theta = 0; % change to rand(1,1)*2*pi ? 
+    theta = 0; 
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
     clutterSample = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); % ?

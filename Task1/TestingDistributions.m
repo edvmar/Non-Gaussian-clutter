@@ -1,3 +1,10 @@
+%%%%%%%%%%%%%%%%%%% Testing Distributions %%%%%%%%%%%%%%%%%%%%
+%
+% Produces figures to test the feasibility of the 
+% implemented distributions
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 clear
 clc
 
@@ -59,7 +66,7 @@ legend('CN', 'CG')
 % integral2(fun ,-1000, 1000, -1000, 1000);
 
 
-%%
+%% Calculate variances
 clear
 clc
 

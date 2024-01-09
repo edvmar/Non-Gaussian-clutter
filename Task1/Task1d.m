@@ -18,15 +18,13 @@ etaValues = {linspace(0.5, 1000, numberOfEtaValues),...
              [linspace(0.5, 2000, numberOfEtaValues*0.5),linspace(2000, maxEta, numberOfEtaValues*0.5)]}; 
 
 
-sampleSize = 10^4; % 10^8 later? 
+sampleSize = 10^8; 
 
 detectorSigma = 1; % The standard deviation for the detector
 clutterSigma  = 1; % The standard deviation for the detector
 detectorMean  = 0;
 clutterMean   = 0;
 
-% pFalseAlarm = zeros(length(SIRs), numberOfEtaValues);
-% pDetection = zeros(length(SIRs), numberOfEtaValues);
 sumFA = zeros(length(SIRs), numberOfEtaValues);
 sumTD = zeros(length(SIRs), numberOfEtaValues);
 
@@ -37,36 +35,30 @@ for iSIR = 1:length(SIRs)
     SIR = 10^(SIRs(iSIR)/10);           
     alpha = clutterSigma*sqrt(SIR);             
    
-    theta = 0; % if not zero we can always rotate to theta 0 
+    theta = 0; 
     s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
     clutterSample = SampleCompoundGaussian(sampleSize, clutterMean, clutterSigma);
     signalSample  = clutterSample + s;
 
     % False Alarm (*)
-    fH1_fa = CompoundGaussianPDF(clutterSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH1_fa = CompoundGaussianPDF(clutterSample, detectorMean + s, detectorSigma);  
     fH0_fa = CompoundGaussianPDF(clutterSample, detectorMean, detectorSigma);
     LRT_fa = fH1_fa./fH0_fa;
 
     % True Detection (**)
-    fH1_td = CompoundGaussianPDF(signalSample, detectorMean + s, detectorSigma);           % or clutter mean?
+    fH1_td = CompoundGaussianPDF(signalSample, detectorMean + s, detectorSigma);  
     fH0_td = CompoundGaussianPDF(signalSample, detectorMean, detectorSigma);
     LRT_td = fH1_td./fH0_td;
 
     for iEta=1:numberOfEtaValues
-        iEta
         eta = etaValues{iSIR}(iEta); 
         
         % False Alarm (*)
         sumFA(iSIR, iEta) = sum((LRT_fa > eta));
-        % sumFA = sum(((fH1_fa./fH0_fa) > eta));
          
         % True Detection (**)
         sumTD(iSIR, iEta) = sum((LRT_td > eta));
-        % sumTD = sum(((fH1_td./fH0_td) > eta)); 
-
-        % pFalseAlarm(iSIR, iEta) = sumFA/sampleSize;
-        % pDetection(iSIR, iEta)  = sumTD/sampleSize;
     end
 end 
 
@@ -83,7 +75,7 @@ for iSIR = 1:length(SIRs)
 end
 set(gca, 'XScale', 'log');
 xlabel('P_{FA}'), ylabel('P_{TD}')
-legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west')
+legend('SIR = 0', 'SIR = 3', 'SIR = 10', 'SIR = 13', location = 'west', FontSize=14)
 axis([1e-7, 1, 0, 1])
  
 

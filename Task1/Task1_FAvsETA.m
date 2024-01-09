@@ -27,12 +27,8 @@ alpha = clutterSigma*sqrt(SIR);
 theta = 0; 
 s = alpha*(cos(theta)+1i*sin(theta)); % signal 
 
-
-clutterSampleCN = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); % ?
-%signalSampleCN = clutterSampleCN + s;
-
-clutterSampleCG = SampleCompoundGaussian(sampleSize, clutterMean, clutterSigma); % ?
-%signalSampleCG = clutterSampleCG + s;
+clutterSampleCN = SampleComplexGaussian(sampleSize, clutterMean, clutterSigma); 
+clutterSampleCG = SampleCompoundGaussian(sampleSize, clutterMean, clutterSigma); 
 
 sumFA_CNCN = zeros(1, numberOfEtaValues);
 sumFA_CNCG = zeros(1, numberOfEtaValues);
