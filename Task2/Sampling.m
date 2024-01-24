@@ -12,7 +12,7 @@ function rangeBin = Sampling(numberOfPulses, sampleSize, rMax, sigma, L, F)
     % Table for cdf x,y values
     domain = linspace(0, rMax, rMax*100);
     range = F(domain)';
-    range_rep = repmat(range,1,sampleSize)';
+    range_rep = repmat(range,1,sampleSize)'; % NOTE: Very data-inefficient. See ReadMe for suggested change.
 
     uniformSample = rand(numberOfPulses, sampleSize);
     xSample = zeros(numberOfPulses, sampleSize);
